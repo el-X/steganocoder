@@ -12,8 +12,9 @@ class SCView {
 public:
     SCView();
     virtual ~SCView();
+    wxFrame* getFrame() const;
 private:
-
+    wxFrame frame;
 };
 
 #endif	/* SCVIEW_H */

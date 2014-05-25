@@ -17,6 +17,15 @@ public:
 private:
     SCView view;
     SCModel model;
+    void init();
+    bool onOpen(wxCommandEvent& event);
+    bool onClose(wxCommandEvent& event);
+    bool onExit(wxCommandEvent& event);
+    bool onLoad(wxCommandEvent& event);
+    bool onSave(wxCommandEvent& event);
+    bool onEncode(wxCommandEvent& event);
+    bool onDecode(wxCommandEvent& event);
+    bool onSecretMessageChange(wxCommandEvent& event);
 };
 
 DECLARE_APP(SCPresenter)
