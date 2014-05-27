@@ -8,13 +8,15 @@
 #ifndef SCVIEW_H
 #define	SCVIEW_H
 
+#include <wx/frame.h>
+
 class SCView {
 public:
     SCView();
     virtual ~SCView();
-    wxFrame* getFrame() const;
+    wxFrame* getFrame();
 private:
-    wxFrame frame;
+    wxFrame* frame;
 };
 
 #endif	/* SCVIEW_H */

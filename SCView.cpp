@@ -13,3 +13,7 @@ SCView::SCView() {
 SCView::~SCView() {
 }
 
+wxFrame* SCView::getFrame() {
+    return frame;
+}
+

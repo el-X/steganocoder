@@ -44,7 +44,7 @@ bool SCPresenter::OnInit() {
  */
 void SCPresenter::init() {
     // Open button clicked -> onOpen
-    view->getFrame()->Connect(view->getFrame()->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, (wxObjectEventFunction) & SCPresenter::onOpen());
+    view->getFrame()->Connect(view->getFrame()->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, (wxObjectEventFunction) & SCPresenter::onOpen);
 
     wxYieldIfNeeded(); // Do we need this?
     wxInitAllImageHandlers();
@@ -59,7 +59,13 @@ void SCPresenter::init() {
  * @return true if no fatal errors occured.
  */
 bool SCPresenter::onOpen(wxCommandEvent& event) {
-    wxFileDialog openDialog(view->getFrame(), _T("Load Image"), wxEmptyString, wxEmptyString, getWXMOTIF());
+    wxFileDialog openDialog(view->getFrame(), _T("Load Image"), wxEmptyString, wxEmptyString,
+#ifdef __WXMOTIF__
+            _T("Bitmap (*.bmp)|*.bmp")
+#else
+            _T("Bitmap (*.bmp;*.dib)|*.bmp;*.dib")
+#endif
+            );
     openDialog.SetDirectory(wxGetHomeDir()); // OS independency
     openDialog.CentreOnParent();
 
@@ -131,7 +137,7 @@ bool SCPresenter::onEncode(wxCommandEvent& event) {
     //message = view->getSecretMessageBox()->GetValue();
     //wxMaxTxtLen = TextCtrl3->GetValue();
 
-    if (message->IsEmpty()) { // enthält der eingegebene Text Zeichen?
+    if (message.IsEmpty()) { // enthält der eingegebene Text Zeichen?
         wxMessageDialog notationDialog(NULL,
                 wxT("You are about to encrypt an empty message.\nAre you sure you want to continue?"),
                 wxT("Notation"),
@@ -181,10 +187,10 @@ bool SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     return true;
 }
 
-_T getWXMOTIF() {
+std::string SCPresenter::getWXMOTIF() {
 #ifdef __WXMOTIF__
-    return _T("Bitmap (*.bmp)|*.bmp");
+    return "Bitmap (*.bmp)|*.bmp";
 #else
-    return _T("Bitmap (*.bmp;*.dib)|*.bmp;*.dib");
+    return "Bitmap (*.bmp;*.dib)|*.bmp;*.dib";
 #endif
 }

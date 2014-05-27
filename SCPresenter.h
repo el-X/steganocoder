@@ -15,8 +15,8 @@ class SCPresenter : public wxApp {
 public:
     virtual bool OnInit();
 private:
-    SCView view;
-    SCModel model;
+    SCView* view;
+    SCModel* model;
     void init();
     bool onOpen(wxCommandEvent& event);
     bool onClose(wxCommandEvent& event);
@@ -26,6 +26,7 @@ private:
     bool onEncode(wxCommandEvent& event);
     bool onDecode(wxCommandEvent& event);
     bool onSecretMessageChange(wxCommandEvent& event);
+    std::string getWXMOTIF();
 };
 
 DECLARE_APP(SCPresenter)
