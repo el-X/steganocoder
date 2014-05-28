@@ -15,15 +15,26 @@ public:
     
     SCModel();
     virtual ~SCModel();
-    char* getModCarrierBytes() const;
-    void setModCarrierBytes(char* modBytes);
-    char* getUnmodCarrierBytes() const;
-    char* setUnmodCarrierBytes(char* unmodBytes);
+    char* getModCarrierBytes() const {
+        return modCarrierBytes;
+    };
+    void setModCarrierBytes(char* modBytes) {
+        modCarrierBytes = modBytes;
+    };
+    char* getUnmodCarrierBytes() const {
+        return unmodCarrierBytes;
+    };
+    char* setUnmodCarrierBytes(char* unmodBytes) {
+        unmodCarrierBytes = unmodBytes;
+    };
     bool encode();
     bool decode();
 private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;
+    bool checkForHeaderSignature() const;
+    std::string createHeader();
+    std::string replaceASCII(std::string str);
     const std::string SGN;
     char* modCarrierBytes;
     char* unmodCarrierBytes;

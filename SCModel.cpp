@@ -11,6 +11,9 @@
 #include <bitset>
 #include <cstdlib>
 #include <limits.h>
+#include <regex>
+
+using namespace std;
 
 SCModel::SCModel() {
 }
@@ -18,13 +21,37 @@ SCModel::SCModel() {
 SCModel::~SCModel() {
 }
 
+string SCModel::replaceASCII(std::string str) {
+    return regex_replace(str, regex("[^\u0000-\u007F]"), string(""));
+}
+
+boolean SCModel::checkForHeaderSignature() const {
+
+    //Prüfe einzelne SGN Zeichen mit den ersten Zeichen der Bitmap
+    for(int i=0; i < SGN.length(); i++) {
+        if(SGN[i] != modCarrierBytes[i]) return false;
+    }
+    
+    return true;
+}
+
+string SCModel::createHeader(std::string msg) {
+    string strMsgLength = "";
+    if(strlen(msg) < 4) {
+        for (int i = 0; i < 4 - strlen(msg); i++) {
+            strMsgLength += "0";
+        }
+    }
+    return SGN + strMsgLength;
+}
+
 /*
  * Returns an bit representation of an unsigned char as string.
  * Example: 'A' is "01000001"
  */
-std::string SCModel::charToBits(const unsigned char& c) const {
+string SCModel::charToBits(const unsigned char& c) const {
     assert(c);
-    std::string bits = "";
+    string bits = "";
     for (int i = 7; i >= 0; i--) {
         bits.append((c & (1 << i)) ? "1" : "0");
     }
