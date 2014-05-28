@@ -10,6 +10,7 @@
 #include <string>
 #include <bitset>
 #include <cstdlib>
+#include <limits.h>
 
 SCModel::SCModel() {
 }

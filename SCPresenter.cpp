@@ -72,6 +72,7 @@ bool SCPresenter::onOpen(wxCommandEvent& event) {
     if (openDialog.ShowModal() == wxID_OK) {
         //view->setUnmodCarrierBitmap((openDialog.GetPath(), event.GetId());
     }
+    return true;
 }
 
 /**
