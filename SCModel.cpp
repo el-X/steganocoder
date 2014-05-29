@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <limits.h>
 #include <regex>
+#include <cstring>
 
 using namespace std;
 
@@ -21,11 +22,11 @@ SCModel::SCModel() {
 SCModel::~SCModel() {
 }
 
-string SCModel::replaceASCII(std::string str) {
+string SCModel::replaceASCII(std::string& str) {
     return regex_replace(str, regex("[^\u0000-\u007F]"), string(""));
 }
 
-boolean SCModel::checkForHeaderSignature() const {
+bool SCModel::checkForHeaderSignature() const {
 
     //Prüfe einzelne SGN Zeichen mit den ersten Zeichen der Bitmap
     for(int i=0; i < SGN.length(); i++) {
@@ -35,10 +36,10 @@ boolean SCModel::checkForHeaderSignature() const {
     return true;
 }
 
-string SCModel::createHeader(std::string msg) {
+string SCModel::createHeader(const std::string& msg) {
     string strMsgLength = "";
-    if(strlen(msg) < 4) {
-        for (int i = 0; i < 4 - strlen(msg); i++) {
+    if(strlen(msg.c_str()) < 4) {
+        for (int i = 0; i < 4 - strlen(msg.c_str()); i++) {
             strMsgLength += "0";
         }
     }

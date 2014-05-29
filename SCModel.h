@@ -33,8 +33,8 @@ private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;
     bool checkForHeaderSignature() const;
-    std::string createHeader();
-    std::string replaceASCII(std::string str);
+    std::string createHeader(const std::string& msg);
+    std::string replaceASCII(std::string& str);
     const std::string SGN;
     char* modCarrierBytes;
     char* unmodCarrierBytes;
