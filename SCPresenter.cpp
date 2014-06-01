@@ -14,27 +14,42 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 #include "SCPresenter.h"
-
 #include <iostream>
+
 
 IMPLEMENT_APP(SCPresenter)
 
+// Mapping für die Events vornehmen
+wxBEGIN_EVENT_TABLE(SCPresenter, wxApp)
+    EVT_MENU(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
+    EVT_BUTTON(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
+    EVT_MENU(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
+    EVT_BUTTON(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
+    EVT_MENU(ID_SAVE_MOD_IMG, SCPresenter::onSave)
+    EVT_BUTTON(ID_SAVE_MOD_IMG, SCPresenter::onSave)
+    EVT_MENU(ID_ENCODE, SCPresenter::onEncode)
+    EVT_BUTTON(ID_ENCODE, SCPresenter::onEncode)
+    EVT_MENU(ID_DECODE, SCPresenter::onDecode)
+    EVT_BUTTON(ID_DECODE, SCPresenter::onDecode)
+    EVT_TEXT(ID_SECRET_MSG, SCPresenter::onSecretMessageChange)
+    EVT_MENU(wxID_EXIT, SCPresenter::onExit)
+    EVT_MENU(wxID_ABOUT, SCPresenter::onAbout)
+wxEND_EVENT_TABLE()
+
 /**
- * Main of steganocoder. 
+ * Die main-Funktion des Programms.
  */
 bool SCPresenter::OnInit() {
-    std::cout << "``::: Initialize SteganoCoder :::´´" << std::endl;
+    wxInitAllImageHandlers();
+    SCView *view = new SCView();
+    view->SetMinSize(wxSize(1152, 864));
+    view->create();
+    view->doLayout();
+    view->Centre();
+    view->Show(true);
 
     this->init();
-    view->getFrame()->Layout();
-    view->getFrame()->CreateStatusBar();
-    view->getFrame()->SetStatusText(_T("Welcome to SteganoCoder!"));
-
-    view->getFrame()->Show(true);
-    view->getFrame()->Centre(wxBOTH);
-    SetTopWindow(view->getFrame());
-
-    std::cout << "´´::: SteganoCoder initialized :::``" << std::endl;
+    view->getStatusBar()->SetStatusText(_("Welcome to SteganoCoder!"));
     return true;
 }
 
@@ -43,14 +58,7 @@ bool SCPresenter::OnInit() {
  * Connects gui actions with kernel actions.
  */
 void SCPresenter::init() {
-    // Open button clicked -> onOpen
-    view->getFrame()->Connect(view->getFrame()->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, (wxObjectEventFunction) & SCPresenter::onOpen);
-
-    wxYieldIfNeeded(); // Do we need this?
-    wxInitAllImageHandlers();
-
-    // view->getSaveBtn()->disable();
-
+//     view->getSaveModImgBtn()->Disable();
 }
 
 /**
@@ -58,8 +66,8 @@ void SCPresenter::init() {
  * @param event created on the gui.
  * @return true if no fatal errors occured.
  */
-bool SCPresenter::onOpen(wxCommandEvent& event) {
-    wxFileDialog openDialog(view->getFrame(), _T("Load Image"), wxEmptyString, wxEmptyString,
+void SCPresenter::onLoad(wxCommandEvent& event) {
+    wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
 #ifdef __WXMOTIF__
             _T("Bitmap (*.bmp)|*.bmp")
 #else
@@ -72,36 +80,6 @@ bool SCPresenter::onOpen(wxCommandEvent& event) {
     if (openDialog.ShowModal() == wxID_OK) {
         //view->setUnmodCarrierBitmap((openDialog.GetPath(), event.GetId());
     }
-    return true;
-}
-
-/**
- * Called when gui frame was closed.
- * @param event created on the gui.
- * @return true if no fatal errors occured.
- */
-bool SCPresenter::onClose(wxCommandEvent& event) {
-    return true;
-}
-
-/**
- * Called when exit button was clicked.
- * @param event created on the gui.
- * @return true if no fatal errors occured.
- */
-bool SCPresenter::onExit(wxCommandEvent& event) {
-    bool frameClosed = view->getFrame()->Close();
-    bool others = true;
-    return frameClosed && others;
-}
-
-/**
- * Called when an Bitmap was loaded.
- * @param event created on the gui.
- * @return true if no fatal errors occured.
- */
-bool SCPresenter::onLoad(wxCommandEvent& event) {
-    return true;
 }
 
 /**
@@ -109,9 +87,9 @@ bool SCPresenter::onLoad(wxCommandEvent& event) {
  * @param event created on the gui.
  * @return true if no fatal errors occured.
  */
-bool SCPresenter::onSave(wxCommandEvent& event) {
+void SCPresenter::onSave(wxCommandEvent& event) {
     // Save the Bitmap with encoded message as *.bmp
-    wxFileDialog dialog(view->getFrame(), _T("Save Image"), wxEmptyString,
+    wxFileDialog dialog(view, _T("Save Image"), wxEmptyString,
             _T("top_secret.bmp"),
             _T("Bitmap (*.bmp)|*.bmp"),
             wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -122,9 +100,8 @@ bool SCPresenter::onSave(wxCommandEvent& event) {
         wxBitmap encBitmap;
         //encBitmap = view->getModCarrierBmp()->GetBitmap();
         encBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->getFrame()->GetStatusBar()->SetStatusText("Image saved: " + dialog.GetPath(), 1);
+        view->GetStatusBar()->SetStatusText("Image saved: " + dialog.GetPath(), 1);
     }
-    return true;
 }
 
 /**
@@ -132,7 +109,7 @@ bool SCPresenter::onSave(wxCommandEvent& event) {
  * @param event created on the gui.
  * @return true if no fatal errors occured.
  */
-bool SCPresenter::onEncode(wxCommandEvent& event) {
+void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message, wxMaxTxtLen;
 
     //message = view->getSecretMessageBox()->GetValue();
@@ -163,7 +140,6 @@ bool SCPresenter::onEncode(wxCommandEvent& event) {
     } else {
         //model->encode();
     }
-    return true;
 }
 
 /**
@@ -171,10 +147,9 @@ bool SCPresenter::onEncode(wxCommandEvent& event) {
  * @param event created on the gui.
  * @return true if no fatal errors occured.
  */
-bool SCPresenter::onDecode(wxCommandEvent& event) {
+void SCPresenter::onDecode(wxCommandEvent& event) {
     //model->decode();
     //setMessage...
-    return true;
 }
 
 /**
@@ -182,10 +157,18 @@ bool SCPresenter::onDecode(wxCommandEvent& event) {
  * @param event created on the gui.
  * @return true if no fatal errors occured.
  */
-bool SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
+void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     // view->getSecretMessageBox()->getValue()->getLength()...
     // view->setLength..
-    return true;
+    std::cout << ".";
+}
+
+void SCPresenter::onExit(wxCommandEvent& event) {
+    view->Close(true);
+}
+
+void SCPresenter::onAbout(wxCommandEvent& event) {
+    wxMessageBox("SteganoCoder", "About SteganoCoder", wxOK | wxICON_INFORMATION);
 }
 
 std::string SCPresenter::getWXMOTIF() {

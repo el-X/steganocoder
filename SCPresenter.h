@@ -18,15 +18,17 @@ private:
     SCView* view;
     SCModel* model;
     void init();
-    bool onOpen(wxCommandEvent& event);
-    bool onClose(wxCommandEvent& event);
-    bool onExit(wxCommandEvent& event);
-    bool onLoad(wxCommandEvent& event);
-    bool onSave(wxCommandEvent& event);
-    bool onEncode(wxCommandEvent& event);
-    bool onDecode(wxCommandEvent& event);
-    bool onSecretMessageChange(wxCommandEvent& event);
+    void onOpen(wxCommandEvent& event);
+    void onClose(wxCommandEvent& event);
+    void onLoad(wxCommandEvent& event);
+    void onSave(wxCommandEvent& event);
+    void onEncode(wxCommandEvent& event);
+    void onDecode(wxCommandEvent& event);
+    void onSecretMessageChange(wxCommandEvent& event);
+    void onAbout(wxCommandEvent& event);
+    void onExit(wxCommandEvent& event);
     std::string getWXMOTIF();
+    wxDECLARE_EVENT_TABLE();
 };
 
 DECLARE_APP(SCPresenter)
