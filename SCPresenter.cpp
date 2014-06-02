@@ -41,24 +41,24 @@ wxEND_EVENT_TABLE()
  */
 bool SCPresenter::OnInit() {
     wxInitAllImageHandlers();
-    SCView *view = new SCView();
+    view = new SCView();
     view->SetMinSize(wxSize(1152, 864));
     view->create();
     view->doLayout();
     view->Centre();
     view->Show(true);
-
+    
+    model = new SCModel();
     this->init();
     view->getStatusBar()->SetStatusText(_("Welcome to SteganoCoder!"));
     return true;
 }
 
 /**
- * Additional initialisation steps.
- * Connects gui actions with kernel actions.
+ * Definiert den Startzustand des Programms.
  */
 void SCPresenter::init() {
-//     view->getSaveModImgBtn()->Disable();
+        view->getSaveModImgBtn()->Disable();
 }
 
 /**
@@ -69,9 +69,9 @@ void SCPresenter::init() {
 void SCPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
 #ifdef __WXMOTIF__
-            _T("Bitmap (*.bmp)|*.bmp")
+            _T("Bitmap (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
 #else
-            _T("Bitmap (*.bmp;*.dib)|*.bmp;*.dib")
+            _T("Bitmap (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
 #endif
             );
     openDialog.SetDirectory(wxGetHomeDir()); // OS independency
