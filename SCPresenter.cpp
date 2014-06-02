@@ -69,9 +69,9 @@ void SCPresenter::init() {
 void SCPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
 #ifdef __WXMOTIF__
-            _T("Bitmap (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
+            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
 #else
-            _T("Bitmap (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
+            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
 #endif
             );
     openDialog.SetDirectory(wxGetHomeDir()); // OS independency
@@ -132,7 +132,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
 
     } else if (wxAtoi(message) > wxAtoi(wxMaxTxtLen)) { // passt der eingegebene Text ins Bild?
         wxMessageDialog notationDialog(NULL,
-                wxT("Sorry but your message is too long.\nSelect either a bigger image or type in a briefer message."),
+                wxT("Sorry but your message is too long.\nSelect either a bigger image or type in a shorter message."),
                 wxT("Notation"),
                 wxOK | wxICON_EXCLAMATION);
         notationDialog.CentreOnParent();

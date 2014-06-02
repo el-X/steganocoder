@@ -22,16 +22,59 @@ SCModel::SCModel() {
 SCModel::~SCModel() {
 }
 
-bool SCModel::encode(const std::string& str) {
-    return true;
+void SCModel::encode(const string& msg) {
+    string encoded_msg = createHeader(msg) + msg;
+    unsigned int msg_size = msg.size();
+    unsigned int encoded_msg_size = encoded_msg.size();
+    char* binary = new char[encoded_msg_size * 8];
+    
+    unsigned int byte_counter = 0;
+    
+    for(unsigned int i = 0; i < encoded_msg_size; i++) {
+        string byte = charToBits(encoded_msg[i]);
+        //Bits setzen
+        for(unsigned int j = 0; j < 8; j++) {
+            binary[byte_counter+j] = byte[j];
+        }
+        byte_counter += 8;
+    }
+    modCarrierBytes = new char[encoded_msg_size * 8];
+    for(unsigned int i=0; i < encoded_msg_size * 8; i++) {
+        modCarrierBytes[i] = unmodCarrierBytes[i] & 254;
+        if(binary[i] == '1') {
+            modCarrierBytes[i] = unmodCarrierBytes[i] + 1;
+        }
+    }
 }
 
-std::string SCModel::decode() {
-    string msg(""); 
-    return msg;
+string SCModel::decode() {
+    string decoded_msg("");
+    
+    unsigned int sgn_size = SGN.size();
+    unsigned int header_size = sgn_size+4;
+    string msg_binary_size("");
+    for(unsigned int i=0; i < 4; i++) {
+        msg_binary_size += bitset<8>(modCarrierBytes[sgn_size+i]).to_string();
+    }
+    unsigned int msg_size = bitset<32>(msg_binary_size).to_ulong();
+    
+    char* binary = new char[msg_size * 8];
+    
+    unsigned int byte_counter = 0;
+    
+    for(unsigned int i=header_size*8; i < (msg_size+header_size)*8; i++) {
+        binary[byte_counter] = modCarrierBytes[i] & 1;
+        byte_counter += 1;
+    }
+    
+    for(unsigned int i=0; i < sizeof(binary); i++) {
+        decoded_msg += binary[i];
+    }
+    
+    return decoded_msg;
 }
 
-string SCModel::replaceASCII(std::string& str) {
+string SCModel::replaceNonASCII(std::string& str) {
     return regex_replace(str, regex("[^\u0000-\u007F]"), string(""));
 }
 
@@ -39,7 +82,8 @@ bool SCModel::checkForHeaderSignature() const {
 
     //Prüfe einzelne SGN Zeichen mit den ersten Zeichen der Bitmap
     for(int i=0; i < SGN.length(); i++) {
-        if(SGN[i] != modCarrierBytes[i]) return false;
+        if(SGN[i] != modCarrierBytes[i]) 
+            return false;
     }
     
     return true;
@@ -47,10 +91,15 @@ bool SCModel::checkForHeaderSignature() const {
 
 string SCModel::createHeader(const std::string& msg) {
     string strMsgLength = "";
-    if(strlen(msg.c_str()) < 4) {
-        for (int i = 0; i < 4 - strlen(msg.c_str()); i++) {
-            strMsgLength += "0";
+    unsigned int msgSize = msg.size();
+    bitset<32> bits(msgSize);
+    string byte("");
+    for(unsigned int i=1; i < 5; i++) {
+        byte = "";
+        for(unsigned int j=1; j < 9; j++) {
+            byte += bits[(i*j)-1];
         }
+        strMsgLength += bitsToChar(byte);
     }
     return SGN + strMsgLength;
 }
@@ -74,11 +123,7 @@ string SCModel::charToBits(const unsigned char& c) const {
  */
 unsigned char SCModel::bitsToChar(const std::string& bits) const {
     assert(bits.size() == 8);
-    unsigned char c = '$';
     std::bitset<8> bitsArray(bits);
     unsigned int asciiPos = bitsArray.to_ulong();
-    if (asciiPos <= CHAR_MAX) {
-        c = static_cast<unsigned char> (asciiPos);
-    }
-    return c;
+    return static_cast<unsigned char> (asciiPos);
 };

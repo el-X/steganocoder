@@ -27,15 +27,15 @@ public:
     char* setUnmodCarrierBytes(char* unmodBytes) {
         unmodCarrierBytes = unmodBytes;
     };
-    bool encode(const std::string& str);
+    void encode(const std::string& msg);
     std::string decode();
+    std::string replaceNonASCII(std::string& str);
 private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;
     bool checkForHeaderSignature() const;
     std::string createHeader(const std::string& msg);
-    std::string replaceASCII(std::string& str);
-    const std::string SGN;
+    const std::string SGN = "SGN";
     char* modCarrierBytes;
     char* unmodCarrierBytes;
 };
