@@ -27,8 +27,8 @@ public:
     char* setUnmodCarrierBytes(char* unmodBytes) {
         unmodCarrierBytes = unmodBytes;
     };
-    bool encode();
-    bool decode();
+    bool encode(const std::string& str);
+    std::string decode();
 private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;
