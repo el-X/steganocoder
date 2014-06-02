@@ -22,6 +22,15 @@ SCModel::SCModel() {
 SCModel::~SCModel() {
 }
 
+bool SCModel::encode(const std::string& str) {
+    return true;
+}
+
+std::string SCModel::decode() {
+    string msg(""); 
+    return msg;
+}
+
 string SCModel::replaceASCII(std::string& str) {
     return regex_replace(str, regex("[^\u0000-\u007F]"), string(""));
 }
