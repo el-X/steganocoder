@@ -75,48 +75,47 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
 
     if (openDialog.ShowModal() == wxID_OK) {
         wxImage image = openDialog.GetPath();
+        wxBitmap bitmap(image);
         if (event.GetId() == ID_LOAD_MOD_IMG) {
-            view->getModStaticBitmap()->SetBitmap(image);
+            view->getModStaticBitmap()->SetBitmap(bitmap);
+            model->setModCarrierBytes((char*) image.GetData());
+            wxString bitPattern = _(model->getModBitPat(char*) tern());
+            view->getBitpatternOutput()->SetValue(bitPattern);
         } else {
             view->getUnmodStaticBitmap()->SetBitmap(image);
+            model->setUnmodCarrierBytes((char*) image.GetData());
         }
     }
 }
 
 /**
- * Saves Bitmap with encoded message in filesystem when save button was clicked.
+ * Öffnet ein FileDialog zur Speicherung des Bildes mit versteckter Nachricht.
+ * 
  * @param event created on the gui.
- * @return true if no fatal errors occured.
  */
 void SCPresenter::onSave(wxCommandEvent& event) {
-    // Save the Bitmap with encoded message as *.bmp
-    wxFileDialog dialog(view, _T("Save Image"), wxEmptyString,
-            _T("top_secret.bmp"),
-            _T("Bitmap (*.bmp)|*.bmp"),
-            wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    wxFileDialog dialog(view, _T("Save Image"), wxEmptyString, _T("top_secret.bmp"),
+            _T("Bitmap (*.bmp)|*.bmp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
     dialog.SetFilterIndex(1);
-
     if (dialog.ShowModal() == wxID_OK) {
-        wxBitmap encBitmap;
-        //encBitmap = view->getModCarrierBmp()->GetBitmap();
-        encBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->GetStatusBar()->SetStatusText("Image saved: " + dialog.GetPath(), 1);
+        wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
+        modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
+        view->GetStatusBar()->SetStatusText(
+                "Image with secret massage saved - " + dialog.GetPath(), 1);
     }
 }
 
 /**
- * Encodes the given message and sets the new Bitmap when encode button was clicked.
+ * Versteckt die gegebene Nachricht in dem gegebenem Bild.
+ * 
  * @param event created on the gui.
- * @return true if no fatal errors occured.
  */
 void SCPresenter::onEncode(wxCommandEvent& event) {
-    wxString message, wxMaxTxtLen;
+    wxString message = view->getSecretMsgInput()->GetValue();
+    unsigned int maxTxtLength = sizeof (model->getUnmodCarrierBytes()) / 8 - model->getHeaderSize();
 
-    //message = view->getSecretMessageBox()->GetValue();
-    //wxMaxTxtLen = TextCtrl3->GetValue();
-
-    if (message.IsEmpty()) { // enthält der eingegebene Text Zeichen?
+    if (message.IsEmpty()) {
         wxMessageDialog notationDialog(NULL,
                 wxT("You are about to encrypt an empty message.\nAre you sure you want to continue?"),
                 wxT("Notation"),
@@ -125,28 +124,26 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
 
         switch (notationDialog.ShowModal()) {
             case wxID_YES:
-                //model->encode();
+                model->encode(message.ToStdString());
                 break;
             case wxID_NO:
                 break;
         }
-
-    } else if (wxAtoi(message) > wxAtoi(wxMaxTxtLen)) { // passt der eingegebene Text ins Bild?
+    } else if (wxAtoi(message) > maxTxtLength) {
         wxMessageDialog notationDialog(NULL,
                 wxT("Sorry but your message is too long.\nSelect either a bigger image or type in a shorter message."),
-                wxT("Notation"),
-                wxOK | wxICON_EXCLAMATION);
+                wxT("Notation"), wxOK | wxICON_EXCLAMATION);
         notationDialog.CentreOnParent();
         notationDialog.ShowModal();
     } else {
-        //model->encode();
+        model->encode(message.ToStdString());
     }
 }
 
 /**
- * Decodes the message from an Bitmap when decode button was clicked.
+ * Holt die Nachricht aus dem geladenen Bild.
+ * 
  * @param event created on the gui.
- * @return true if no fatal errors occured.
  */
 void SCPresenter::onDecode(wxCommandEvent& event) {
     //model->decode();
