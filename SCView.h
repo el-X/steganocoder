@@ -65,7 +65,7 @@ public:
         return this->decodeBtn;
     }
     wxTextCtrl* getMaxTxtLengthOutput() {
-        return this->txtLengthOutput;
+        return this->maxTxtLengthOutput;
     }
     wxTextCtrl* getTxtLengthOutput() {
         return this->txtLengthOutput;

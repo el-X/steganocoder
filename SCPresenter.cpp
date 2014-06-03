@@ -13,8 +13,10 @@
 
 #include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/regex.h>
 #include "SCPresenter.h"
 #include <iostream>
+#include <string>
 
 IMPLEMENT_APP(SCPresenter)
 
@@ -58,6 +60,8 @@ bool SCPresenter::OnInit() {
  */
 void SCPresenter::init() {
     view->getSaveModImgBtn()->Disable();
+    view->getEncodeBtn()->Disable();
+    view->getDecodeBtn()->Disable();
 }
 
 /**
@@ -77,13 +81,24 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
         wxImage image = openDialog.GetPath();
         wxBitmap bitmap(image);
         if (event.GetId() == ID_LOAD_MOD_IMG) {
+            // Bild mit versteckter Nachricht wurde geladen
             view->getModStaticBitmap()->SetBitmap(bitmap);
-            model->setModCarrierBytes((char*) image.GetData());
-            wxString bitPattern = _(model->getModBitPat(char*) tern());
+            model->setModCarrierBytes(image.GetData());
+            wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
+            view->getDecodeBtn()->Enable(true);
         } else {
+            // Bild ohne versteckter Nachricht wurde geladen
             view->getUnmodStaticBitmap()->SetBitmap(image);
-            model->setUnmodCarrierBytes((char*) image.GetData());
+            model->setUnmodCarrierBytes(image.GetData());
+            view->getEncodeBtn()->Enable(true);
+            // Zeige maximale Länge der Nachricht
+            view->getMaxTxtLengthOutput()->Clear();
+            // FIXME: falsche max länge!
+            int maxTxtLength = (sizeof (image.GetData()) / sizeof (image.GetData()[0]))
+                    / 8 - model->getHeaderSize();
+            std::cout << " max länge: " << maxTxtLength << std::endl;
+            *(view->getMaxTxtLengthOutput()) << maxTxtLength;
         }
     }
 }
@@ -113,7 +128,8 @@ void SCPresenter::onSave(wxCommandEvent& event) {
  */
 void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
-    unsigned int maxTxtLength = sizeof (model->getUnmodCarrierBytes()) / 8 - model->getHeaderSize();
+    int maxTxtLength = (sizeof (model->getUnmodCarrierBytes()) / sizeof (model->getUnmodCarrierBytes()[0]))
+            / 8 - model->getHeaderSize();
 
     if (message.IsEmpty()) {
         wxMessageDialog notationDialog(NULL,
@@ -125,6 +141,8 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         switch (notationDialog.ShowModal()) {
             case wxID_YES:
                 model->encode(message.ToStdString());
+//                wxImage image();
+//                view->getModStaticBitmap()->SetBitmap(image.SetData(model->getModCarrierBytes()));
                 break;
             case wxID_NO:
                 break;
@@ -156,9 +174,13 @@ void SCPresenter::onDecode(wxCommandEvent& event) {
  * @return true if no fatal errors occured.
  */
 void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
-    // view->getSecretMessageBox()->getValue()->getLength()...
-    // view->setLength..
-    std::cout << ".";
+    //FIXME: replaceASCII is not working
+//    std::string rawInput = view->getSecretMsgInput()->GetValue().ToStdString();
+//    wxString filtered = _(model->replaceNonASCII(rawInput));
+//    view->getSecretMsgInput()->SetValue(filtered);
+    view->getTxtLengthOutput()->Clear();
+    int size = view->getSecretMsgInput()->GetValue().size();
+    *(view->getTxtLengthOutput()) << size;
 }
 
 void SCPresenter::onExit(wxCommandEvent& event) {
