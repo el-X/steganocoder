@@ -16,24 +16,23 @@
 #include "SCPresenter.h"
 #include <iostream>
 
-
 IMPLEMENT_APP(SCPresenter)
 
 // Mapping für die Events vornehmen
 wxBEGIN_EVENT_TABLE(SCPresenter, wxApp)
-    EVT_MENU(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
-    EVT_BUTTON(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
-    EVT_MENU(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
-    EVT_BUTTON(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
-    EVT_MENU(ID_SAVE_MOD_IMG, SCPresenter::onSave)
-    EVT_BUTTON(ID_SAVE_MOD_IMG, SCPresenter::onSave)
-    EVT_MENU(ID_ENCODE, SCPresenter::onEncode)
-    EVT_BUTTON(ID_ENCODE, SCPresenter::onEncode)
-    EVT_MENU(ID_DECODE, SCPresenter::onDecode)
-    EVT_BUTTON(ID_DECODE, SCPresenter::onDecode)
-    EVT_TEXT(ID_SECRET_MSG, SCPresenter::onSecretMessageChange)
-    EVT_MENU(wxID_EXIT, SCPresenter::onExit)
-    EVT_MENU(wxID_ABOUT, SCPresenter::onAbout)
+EVT_MENU(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
+EVT_BUTTON(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
+EVT_MENU(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
+EVT_BUTTON(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
+EVT_MENU(ID_SAVE_MOD_IMG, SCPresenter::onSave)
+EVT_BUTTON(ID_SAVE_MOD_IMG, SCPresenter::onSave)
+EVT_MENU(ID_ENCODE, SCPresenter::onEncode)
+EVT_BUTTON(ID_ENCODE, SCPresenter::onEncode)
+EVT_MENU(ID_DECODE, SCPresenter::onDecode)
+EVT_BUTTON(ID_DECODE, SCPresenter::onDecode)
+EVT_TEXT(ID_SECRET_MSG, SCPresenter::onSecretMessageChange)
+EVT_MENU(wxID_EXIT, SCPresenter::onExit)
+EVT_MENU(wxID_ABOUT, SCPresenter::onAbout)
 wxEND_EVENT_TABLE()
 
 /**
@@ -42,12 +41,12 @@ wxEND_EVENT_TABLE()
 bool SCPresenter::OnInit() {
     wxInitAllImageHandlers();
     view = new SCView();
-    view->SetMinSize(wxSize(1152, 864));
+    view->SetMinSize(wxSize(800, 600));
     view->create();
     view->doLayout();
     view->Centre();
     view->Show(true);
-    
+
     model = new SCModel();
     this->init();
     view->getStatusBar()->SetStatusText(_("Welcome to SteganoCoder!"));
@@ -58,27 +57,29 @@ bool SCPresenter::OnInit() {
  * Definiert den Startzustand des Programms.
  */
 void SCPresenter::init() {
-        view->getSaveModImgBtn()->Disable();
+    view->getSaveModImgBtn()->Disable();
 }
 
 /**
- * Opens FileDialog to load an Bitmap where the encoded message should be stored.
- * @param event created on the gui.
- * @return true if no fatal errors occured.
+ * Öffnet ein FileDialog zum Laden des Bildes.
+ * Anhand der event id wird unterschieden welche Aktion 
+ * getätigt wurde (welche Komponente wurde getätigt).
+ * 
+ * @param event Kommando Event mit der ID
  */
 void SCPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
-#ifdef __WXMOTIF__
-            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
-#else
-            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif")
-#endif
-            );
+            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif"));
     openDialog.SetDirectory(wxGetHomeDir()); // OS independency
     openDialog.CentreOnParent();
 
     if (openDialog.ShowModal() == wxID_OK) {
-        //view->setUnmodCarrierBitmap((openDialog.GetPath(), event.GetId());
+        wxImage image = openDialog.GetPath();
+        if (event.GetId() == ID_LOAD_MOD_IMG) {
+            view->getModStaticBitmap()->SetBitmap(image);
+        } else {
+            view->getUnmodStaticBitmap()->SetBitmap(image);
+        }
     }
 }
 
