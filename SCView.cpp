@@ -19,7 +19,7 @@ void SCView::create() {
     this->createMiddleBox();
     this->createUpperRightBox();
     this->createLowerRightBox();
-  
+
     statusBar = this->CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
 }
 
@@ -69,7 +69,7 @@ void SCView::doLayout() {
 
 void SCView::createMenuBar() {
     // File
-    wxMenu *menuFile = new wxMenu;
+    wxMenu *menuFile = new wxMenu;    
     menuFile->Append(ID_LOAD_UNMOD_IMG, "&Load Unmodified Image...\tCtrl-U",
             "Load an image that you want to be encoded");
     menuFile->AppendSeparator();
@@ -78,19 +78,27 @@ void SCView::createMenuBar() {
     menuFile->Append(ID_SAVE_MOD_IMG, "&Save Modified Image...\tCtrl-S",
             "Save an image that contains a secret message");
     menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT);
-    
+    wxMenuItem *exitMenuItem = new wxMenuItem(menuFile, wxID_EXIT);
+    exitMenuItem->SetBitmap(wxImage(_("images/exit16x16.png")));
+    menuFile->Append(exitMenuItem);
+
     // Edit
     wxMenu *menuEdit = new wxMenu;
-    menuEdit->Append(ID_ENCODE, "&Encode\tCtrl-E",
+    wxMenuItem *encodeMenuItem = new wxMenuItem(menuEdit, ID_ENCODE, "&Encode\tCtrl-E",
             "Encode the unmodified image with the secret message");
-    menuEdit->Append(ID_DECODE, "&Decode\tCtrl-D",
+    encodeMenuItem->SetBitmap(wxImage(_("images/encode16x16.png")));
+    menuEdit->Append(encodeMenuItem);
+    wxMenuItem *decodeMenuItem = new wxMenuItem(menuEdit, ID_DECODE, "&Decode\tCtrl-D",
             "Decode the modified image which contains a secret message");
-    
+    decodeMenuItem->SetBitmap(wxImage(_("images/decode16x16.png")));
+    menuEdit->Append(decodeMenuItem);
+
     // Help
     wxMenu *menuHelp = new wxMenu;
-    menuHelp->Append(wxID_ABOUT);
-    
+    wxMenuItem *aboutMenuItem = new wxMenuItem(menuHelp, wxID_ABOUT);
+    aboutMenuItem->SetBitmap(wxImage(_("images/about16x16.png")));
+    menuHelp->Append(aboutMenuItem);
+
     wxMenuBar *menuBar = new wxMenuBar;
     menuBar->Append(menuFile, "&File");
     menuBar->Append(menuEdit, "&Edit");
@@ -111,7 +119,7 @@ void SCView::createUpperLeftBox() {
     unmodImgSeparator = new wxStaticLine(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
     maxTxtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _("Max Text Length:"), wxDefaultPosition, wxDefaultSize, 0);
     maxTxtLengthLabel->Wrap(-1);
-    maxTxtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    maxTxtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(0, -1), wxTE_READONLY);
 }
 
 /**
@@ -120,9 +128,9 @@ void SCView::createUpperLeftBox() {
  */
 void SCView::createLowerLeftBox() {
     secretMsgInput = new wxTextCtrl(mainPanel, ID_SECRET_MSG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _("Text Length:"), wxDefaultPosition, wxDefaultSize, 0);
-    txtLengthLabel->Wrap(-1);
-    txtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _("Text Length:"), wxDefaultPosition, wxSize( -1,-1 ), 0);
+    txtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, -1), wxTE_READONLY);
+    txtLengthLabel->Wrap(-1); // kein Wrapping
 }
 
 /**
@@ -162,7 +170,7 @@ void SCView::layoutUpperLeftBox() {
     wxBoxSizer* unmodImgScrolledSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* unmodImgInfoSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* maxTxtLengthSizer = new wxBoxSizer(wxHORIZONTAL);
-    
+
     unmodImgScrolledSizer->Add(unmodStaticBitmap, 1, wxALL | wxEXPAND, 5);
     unmodImgScrolledWindow->SetSizer(unmodImgScrolledSizer);
     unmodImgScrolledWindow->Layout();
@@ -184,13 +192,14 @@ void SCView::layoutUpperLeftBox() {
  */
 void SCView::layoutLowerLeftBox() {
     secretMsgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _("Secret Message")), wxVERTICAL);
-    wxBoxSizer* txtLengthSizer = new wxBoxSizer(wxHORIZONTAL);  
-    
+    wxBoxSizer* txtLengthSizer = new wxBoxSizer(wxHORIZONTAL);
+
     txtLengthSizer->Add(txtLengthLabel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-    txtLengthSizer->Add(txtLengthOutput, 0, wxALL, 5);
+    txtLengthSizer->Add(txtLengthOutput, 1, wxALL | wxEXPAND, 5);
+    txtLengthSizer->Add(0, 0, 1, wxEXPAND, 5); // Spacer hinzufügen
 
     secretMsgSizer->Add(secretMsgInput, 1, wxALL | wxEXPAND, 5);
-    secretMsgSizer->Add(txtLengthSizer, 0, wxALIGN_RIGHT, 5);
+    secretMsgSizer->Add(txtLengthSizer, 0, wxEXPAND, 5);
 }
 
 /**

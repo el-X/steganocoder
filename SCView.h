@@ -35,7 +35,7 @@ class SCView : public wxFrame {
 public:
     SCView(const wxString& title = _("SteganoCoder"),
             const wxPoint& pos = wxDefaultPosition,
-            const wxSize& size = wxSize(1152, 864))
+            const wxSize& size = wxSize(800, 600))
     : wxFrame(NULL, wxID_ANY, title, pos, size) {};
     virtual ~SCView();
     void create();
