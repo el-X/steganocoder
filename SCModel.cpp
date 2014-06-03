@@ -95,7 +95,7 @@ bool SCModel::checkForHeaderSignature() const {
 string SCModel::getModBitPattern() {
     string result("");
     for(unsigned int i=0; i < strlen(modCarrierBytes); i++) {
-        result += charToBits(modCarrierBytes[i]);
+        result += charToBits(modCarrierBytes[i]) + " ";
     }
     return result;
 }
