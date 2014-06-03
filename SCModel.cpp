@@ -70,7 +70,7 @@ string SCModel::decode() {
         byte_counter += 1;
     }
     
-    for(unsigned int i=0; i < sizeof(binary); i++) {
+    for(unsigned int i=0; i < strlen(binary); i++) {
         decoded_msg += binary[i];
     }
     
@@ -93,8 +93,8 @@ bool SCModel::checkForHeaderSignature() const {
 }
 
 string SCModel::getModBitPattern() {
-    string result("nix");
-    for(unsigned int i=0; i < sizeof(modCarrierBytes); i++) {
+    string result("");
+    for(unsigned int i=0; i < strlen(modCarrierBytes); i++) {
         result += charToBits(modCarrierBytes[i]);
     }
     return result;
