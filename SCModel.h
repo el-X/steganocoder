@@ -27,6 +27,7 @@ public:
     char* setUnmodCarrierBytes(char* unmodBytes) {
         unmodCarrierBytes = unmodBytes;
     };
+    unsigned int getHeaderSize();
     void encode(const std::string& msg);
     std::string decode();
     std::string replaceNonASCII(std::string& str);

@@ -47,11 +47,14 @@ void SCModel::encode(const string& msg) {
     }
 }
 
+unsigned int SCModel::getHeaderSize() {
+    return (SGN.size() + 4);
+}
+
 string SCModel::decode() {
     string decoded_msg("");
     
     unsigned int sgn_size = SGN.size();
-    unsigned int header_size = sgn_size+4;
     string msg_binary_size("");
     for(unsigned int i=0; i < 4; i++) {
         msg_binary_size += bitset<8>(modCarrierBytes[sgn_size+i]).to_string();
@@ -62,7 +65,7 @@ string SCModel::decode() {
     
     unsigned int byte_counter = 0;
     
-    for(unsigned int i=header_size*8; i < (msg_size+header_size)*8; i++) {
+    for(unsigned int i=getHeaderSize()*8; i < (msg_size+getHeaderSize())*8; i++) {
         binary[byte_counter] = modCarrierBytes[i] & 1;
         byte_counter += 1;
     }
