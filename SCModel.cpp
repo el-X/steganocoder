@@ -92,6 +92,14 @@ bool SCModel::checkForHeaderSignature() const {
     return true;
 }
 
+string SCModel::getModBitPattern() {
+    string result("");
+    for(unsigned int i=0; i < sizeof(modCarrierBytes); i++) {
+        result += charToBits(modCarrierBytes[i]);
+    }
+    return result;
+}
+
 string SCModel::createHeader(const std::string& msg) {
     string strMsgLength = "";
     unsigned int msgSize = msg.size();

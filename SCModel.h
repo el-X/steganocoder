@@ -28,6 +28,7 @@ public:
         unmodCarrierBytes = unmodBytes;
     };
     unsigned int getHeaderSize();
+    std::string getModBitPattern();
     void encode(const std::string& msg);
     std::string decode();
     std::string replaceNonASCII(std::string& str);
