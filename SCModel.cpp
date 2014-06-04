@@ -59,8 +59,6 @@ unsigned int SCModel::getHeaderSize() {
 }
 
 string SCModel::decode() {
-    assert(modCarrierBytes);
-    
     string decoded_msg("");
     unsigned int sgn_size = SGN.size();
     string msg_binary_size("");
@@ -83,7 +81,6 @@ string SCModel::decode() {
 }
 
 bool SCModel::checkForHeaderSignature() const {
-    assert(modCarrierBytes);
     //Prüfe einzelne SGN Zeichen mit den ersten Zeichen der Bitmap
     for (size_t i = 0; i < SGN.length(); i++) {
         if (SGN[i] != modCarrierBytes[i])
@@ -93,7 +90,6 @@ bool SCModel::checkForHeaderSignature() const {
 }
 
 string SCModel::getModBitPattern() {
-    assert(modCarrierBytes);
     string result("");
     for (size_t i = 0; i < sizeof (modCarrierBytes) / sizeof (modCarrierBytes[0]); i++) {
         result += charToByte(modCarrierBytes[i]) + " ";
