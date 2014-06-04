@@ -23,8 +23,6 @@ SCModel::~SCModel() {
 }
 
 void SCModel::encode(const string& msg) {
-    assert(unmodCarrierBytes);
-    
     cout << " Encoding... " << endl;
     string encoded_msg = createHeader(msg) + msg;
     cout << "EncMsg: " << encoded_msg << endl;
@@ -32,24 +30,27 @@ void SCModel::encode(const string& msg) {
     unsigned int encoded_msg_size = encoded_msg.size();
     char* binary = new char[encoded_msg_size * 8];
     cout << " MsgSize: " << msg_size << " EncMsgSize: " << encoded_msg_size << endl;
-    unsigned int byte_counter = 0;
-
+    size_t byte_counter = 0;
     for (size_t i = 0; i < encoded_msg_size; i++) {
         string byte = charToByte(encoded_msg[i]);
         //Bits setzen
-        for (unsigned int j = 0; j < 8; j++) {
+        for (size_t j = 0; j < 8; j++) {
             binary[byte_counter + j] = byte[j];
         }
         byte_counter += 8;
     }
     cout << " Binary: \n " << binary << endl;
+    //FIXME größe der beiden char arrays sind nicht gleich
     modCarrierBytes = new unsigned char[encoded_msg_size * 8];
     for (size_t i = 0; i < encoded_msg_size * 8; i++) {
         modCarrierBytes[i] = unmodCarrierBytes[i] & 254;
+        cout << " cleared byte: " << modCarrierBytes[i] << endl;
         if (binary[i] == '1') {
             modCarrierBytes[i] = unmodCarrierBytes[i] + 1;
         }
     }
+    modCarrierBytes += '\0';
+    cout << " ModBytes: \n " << modCarrierBytes << endl;
     cout << " Encoding finished " << endl;
 }
 
@@ -109,7 +110,7 @@ string SCModel::createHeader(const std::string& msg) {
     cout << " MsgSize in Bits: " << strBits << endl;
     string byte("");
     // Länge der Nachricht in den Header reinschreiben (in Bitdarstellung)
-    for (unsigned int i = 0; i < 4; i++) {
+    for (size_t i = 0; i < 4; i++) {
         byte = "";
         //        for(unsigned int j=1; j < 9; j++) {
         //            byte += bits[(i*j)-1];

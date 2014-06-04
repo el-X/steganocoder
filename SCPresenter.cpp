@@ -63,6 +63,7 @@ void SCPresenter::init() {
     view->getEncodeBtn()->Disable();
     view->getDecodeBtn()->Disable();
     *(view->getTxtLengthOutput()) << 0;
+    *(view->getMaxTxtLengthOutput()) << 0;
 }
 
 /**
@@ -149,7 +150,20 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         notationDialog.CentreOnParent();
         notationDialog.ShowModal();
     } else {
+        std::cout << "get data for encode.." << std::endl;
+        wxImage image = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
+        std::cout << "get data.. " << std::endl;
+        unsigned char* data = image.GetData();
+        std::cout << "parse data.. " << std::endl;
+        model->setUnmodCarrierBytes(data);
         model->encode(message.ToStdString());
+        wxString bitpattern = _(model->getModBitPattern());
+        view->getBitpatternOutput()->SetValue(bitpattern);
+        std::cout << "create image with new data.. " << std::endl;
+        wxImage image2(image.GetSize(), model->getModCarrierBytes());
+        std::cout << " set new image.. " << std::endl;
+        //view->getModStaticBitmap()->SetBitmap(image2);
+        
     }
 }
 
