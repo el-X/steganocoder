@@ -19,7 +19,6 @@ public:
     std::string getModBitPattern();
     void encode(const std::string& msg);
     std::string decode();
-    std::string replaceNonASCII(std::string& str);
     unsigned char* getModCarrierBytes() const;
     void setModCarrierBytes(unsigned char* modBytes);
     unsigned char* getUnmodCarrierBytes() const;

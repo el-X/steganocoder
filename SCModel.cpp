@@ -34,7 +34,7 @@ void SCModel::encode(const string& msg) {
     cout << " MsgSize: " << msg_size << " EncMsgSize: " << encoded_msg_size << endl;
     unsigned int byte_counter = 0;
 
-    for (unsigned int i = 0; i < encoded_msg_size; i++) {
+    for (size_t i = 0; i < encoded_msg_size; i++) {
         string byte = charToByte(encoded_msg[i]);
         //Bits setzen
         for (unsigned int j = 0; j < 8; j++) {
@@ -44,7 +44,7 @@ void SCModel::encode(const string& msg) {
     }
     cout << " Binary: \n " << binary << endl;
     modCarrierBytes = new unsigned char[encoded_msg_size * 8];
-    for (unsigned int i = 0; i < encoded_msg_size * 8; i++) {
+    for (size_t i = 0; i < encoded_msg_size * 8; i++) {
         modCarrierBytes[i] = unmodCarrierBytes[i] & 254;
         if (binary[i] == '1') {
             modCarrierBytes[i] = unmodCarrierBytes[i] + 1;
@@ -64,14 +64,14 @@ string SCModel::decode() {
     unsigned int sgn_size = SGN.size();
     string msg_binary_size("");
 
-    for (unsigned int i = 0; i < 4; i++) {
+    for (size_t i = 0; i < 4; i++) {
         msg_binary_size += bitset<8>(modCarrierBytes[sgn_size + i]).to_string();
     }
     unsigned int msg_size = bitset<32>(msg_binary_size).to_ulong();
     char* binary = new char[msg_size * 8];
     unsigned int byte_counter = 0;
 
-    for (unsigned int i = getHeaderSize()*8; i < (msg_size + getHeaderSize())*8; i++) {
+    for (size_t i = getHeaderSize()*8; i < (msg_size + getHeaderSize())*8; i++) {
         binary[byte_counter] = modCarrierBytes[i] & 1;
         byte_counter += 1;
     }
@@ -79,10 +79,6 @@ string SCModel::decode() {
         decoded_msg += binary[i];
     }
     return decoded_msg;
-}
-
-string SCModel::replaceNonASCII(std::string& str) {
-    return regex_replace(str, regex("[^\u0000-\u007F]"), string(""));
 }
 
 bool SCModel::checkForHeaderSignature() const {

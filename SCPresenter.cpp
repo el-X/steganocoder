@@ -62,6 +62,7 @@ void SCPresenter::init() {
     view->getSaveModImgBtn()->Disable();
     view->getEncodeBtn()->Disable();
     view->getDecodeBtn()->Disable();
+    *(view->getTxtLengthOutput()) << 0;
 }
 
 /**
@@ -94,11 +95,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             view->getEncodeBtn()->Enable(true);
             // Zeige maximale Länge der Nachricht
             view->getMaxTxtLengthOutput()->Clear();
-            // FIXME: falsche max länge!
-            int maxTxtLength = (sizeof (image.GetData()) / sizeof (image.GetData()[0]))
-                    / 8 - model->getHeaderSize();
-            std::cout << " max länge: " << maxTxtLength << std::endl;
-            *(view->getMaxTxtLengthOutput()) << maxTxtLength;
+            *(view->getMaxTxtLengthOutput()) << getMaxTextLength();
         }
     }
 }
@@ -128,9 +125,7 @@ void SCPresenter::onSave(wxCommandEvent& event) {
  */
 void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
-    int maxTxtLength = (sizeof (model->getUnmodCarrierBytes()) / sizeof (model->getUnmodCarrierBytes()[0]))
-            / 8 - model->getHeaderSize();
-
+    
     if (message.IsEmpty()) {
         wxMessageDialog notationDialog(NULL,
                 wxT("You are about to encrypt an empty message.\nAre you sure you want to continue?"),
@@ -141,13 +136,13 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         switch (notationDialog.ShowModal()) {
             case wxID_YES:
                 model->encode(message.ToStdString());
-//                wxImage image();
-//                view->getModStaticBitmap()->SetBitmap(image.SetData(model->getModCarrierBytes()));
+                //                wxImage image();
+                //                view->getModStaticBitmap()->SetBitmap(image.SetData(model->getModCarrierBytes()));
                 break;
             case wxID_NO:
                 break;
         }
-    } else if (wxAtoi(message) > maxTxtLength) {
+    } else if (wxAtoi(message) > getMaxTextLength()) {
         wxMessageDialog notationDialog(NULL,
                 wxT("Sorry but your message is too long.\nSelect either a bigger image or type in a shorter message."),
                 wxT("Notation"), wxOK | wxICON_EXCLAMATION);
@@ -169,15 +164,25 @@ void SCPresenter::onDecode(wxCommandEvent& event) {
 }
 
 /**
- * Sets actual message length in the length label.
+ * Überprüft das Eingabefeld auf nicht zulässige Zeichen und 
+ * ersetzt diese durch gültige Zeichen. Zusätzlich wird die 
+ * angezeigte Länge der einegegebener Nachricht aktualisiert.
+ * 
  * @param event created on the gui.
- * @return true if no fatal errors occured.
  */
 void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
-    //FIXME: replaceASCII is not working
-//    std::string rawInput = view->getSecretMsgInput()->GetValue().ToStdString();
-//    wxString filtered = _(model->replaceNonASCII(rawInput));
-//    view->getSecretMsgInput()->SetValue(filtered);
+    // Ersetze alle nicht ASCII Zeichen
+    wxString rawInput = view->getSecretMsgInput()->GetValue();
+    wxString filtered = view->getSecretMsgInput()->GetValue();
+    wxRegEx reg;
+    if (reg.Compile(wxT("[ÄÖÜäöüß*]"))) {
+        reg.Replace(&filtered, wxT("?")); // gemäß der Maske ersetzen
+    }
+    if (rawInput.compare(filtered) != 0) {
+        view->getSecretMsgInput()->SetValue(filtered);
+        view->getSecretMsgInput()->SetInsertionPointEnd();
+    }
+    // Aktualisiere die angezeigte Länge der Nachricht
     view->getTxtLengthOutput()->Clear();
     int size = view->getSecretMsgInput()->GetValue().size();
     *(view->getTxtLengthOutput()) << size;
@@ -190,6 +195,17 @@ void SCPresenter::onExit(wxCommandEvent& event) {
 void SCPresenter::onAbout(wxCommandEvent& event) {
     wxMessageBox("SteganoCoder", "About SteganoCoder", wxOK | wxICON_INFORMATION);
 }
+
+int SCPresenter::getMaxTextLength() const {
+    unsigned int maxTxtLength = 0;
+    if (!view->getUnmodStaticBitmap()->GetBitmap().IsNull()) {
+        unsigned int height = view->getUnmodStaticBitmap()->GetBitmap().GetHeight();
+        unsigned int width = view->getUnmodStaticBitmap()->GetBitmap().GetWidth();
+        maxTxtLength = (height * width * 3) / 8 - model->getHeaderSize();
+    }
+    return maxTxtLength;
+}
+
 
 std::string SCPresenter::getWXMOTIF() {
 #ifdef __WXMOTIF__

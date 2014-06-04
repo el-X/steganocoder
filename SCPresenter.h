@@ -27,6 +27,7 @@ private:
     void onSecretMessageChange(wxCommandEvent& event);
     void onAbout(wxCommandEvent& event);
     void onExit(wxCommandEvent& event);
+    int getMaxTextLength() const;
     std::string getWXMOTIF();
     wxDECLARE_EVENT_TABLE();
 };
