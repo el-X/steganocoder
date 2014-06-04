@@ -70,13 +70,22 @@ void SCView::doLayout() {
 void SCView::createMenuBar() {
     // File
     wxMenu *menuFile = new wxMenu;    
-    menuFile->Append(ID_LOAD_UNMOD_IMG, "&Load Unmodified Image...\tCtrl-U",
-            "Load an image that you want to be encoded");
+    wxMenuItem *loadUnmodImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_UNMOD_IMG, 
+            "&Load Unmodified Image...\tCtrl-U", "Load an image that you want to encode");
+    loadUnmodImgMenuItem->SetBitmap(wxImage(_("images/open16x16.png")));
+    menuFile->Append(loadUnmodImgMenuItem);
+    
     menuFile->AppendSeparator();
-    menuFile->Append(ID_LOAD_MOD_IMG, "&Load Modified Image...\tCtrl-M",
-            "Load an image that contains a secret message");
-    menuFile->Append(ID_SAVE_MOD_IMG, "&Save Modified Image...\tCtrl-S",
-            "Save an image that contains a secret message");
+    wxMenuItem *loadModImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_MOD_IMG, 
+                "&Load Modified Image...\tCtrl-M", "Load an image that contains a secret message");
+    loadModImgMenuItem->SetBitmap(wxImage(_("images/open16x16.png")));
+    menuFile->Append(loadModImgMenuItem);
+    
+    saveModImgMenuItem = new wxMenuItem(menuFile, ID_SAVE_MOD_IMG, 
+            "&Save Modified Image...\tCtrl-S", "Save an image that contains a secret message");
+    saveModImgMenuItem->SetBitmap(wxImage(_("images/save16x16.png")));
+    menuFile->Append(saveModImgMenuItem);
+
     menuFile->AppendSeparator();
     wxMenuItem *exitMenuItem = new wxMenuItem(menuFile, wxID_EXIT);
     exitMenuItem->SetBitmap(wxImage(_("images/exit16x16.png")));
@@ -84,11 +93,11 @@ void SCView::createMenuBar() {
 
     // Edit
     wxMenu *menuEdit = new wxMenu;
-    wxMenuItem *encodeMenuItem = new wxMenuItem(menuEdit, ID_ENCODE, "&Encode\tCtrl-E",
+    encodeMenuItem = new wxMenuItem(menuEdit, ID_ENCODE, "&Encode\tCtrl-E",
             "Encode the unmodified image with the secret message");
     encodeMenuItem->SetBitmap(wxImage(_("images/encode16x16.png")));
     menuEdit->Append(encodeMenuItem);
-    wxMenuItem *decodeMenuItem = new wxMenuItem(menuEdit, ID_DECODE, "&Decode\tCtrl-D",
+    decodeMenuItem = new wxMenuItem(menuEdit, ID_DECODE, "&Decode\tCtrl-D",
             "Decode the modified image which contains a secret message");
     decodeMenuItem->SetBitmap(wxImage(_("images/decode16x16.png")));
     menuEdit->Append(decodeMenuItem);
