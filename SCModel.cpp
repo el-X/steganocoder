@@ -13,6 +13,7 @@
 #include <limits.h>
 #include <regex>
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -39,18 +40,22 @@ void SCModel::encode(const string& msg) {
         }
         byte_counter += 8;
     }
-    cout << " Binary: \n " << binary << endl;
+    cout << " Binary was set" << endl;
     //FIXME größe der beiden char arrays sind nicht gleich
-    modCarrierBytes = new unsigned char[encoded_msg_size * 8];
+    //modCarrierBytes = new unsigned char[encoded_msg_size * 8];
+    //memcpy(modCarrierBytes, unmodCarrierBytes, strlen((char*) modCarrierBytes));
+    //modCarrierBytes = new unsigned char[](unmodCarrierBytes);
+    modCarrierBytes = new unsigned char[unmodCarrierBytesLength];
+    modCarrierBytesLength = unmodCarrierBytesLength;
+    for (size_t i = 0; i < this->unmodCarrierBytesLength; i++) {
+        modCarrierBytes[i] = unmodCarrierBytes[i];
+    }
     for (size_t i = 0; i < encoded_msg_size * 8; i++) {
         modCarrierBytes[i] = unmodCarrierBytes[i] & 254;
-        cout << " cleared byte: " << modCarrierBytes[i] << endl;
         if (binary[i] == '1') {
             modCarrierBytes[i] = unmodCarrierBytes[i] + 1;
         }
     }
-    modCarrierBytes += '\0';
-    cout << " ModBytes: \n " << modCarrierBytes << endl;
     cout << " Encoding finished " << endl;
 }
 
@@ -88,11 +93,11 @@ bool SCModel::checkForHeaderSignature() const {
     }
     return true;
 }
-
+// FIXME String building takes too much time!!!
 string SCModel::getModBitPattern() {
     string result("");
-    for (size_t i = 0; i < sizeof (modCarrierBytes) / sizeof (modCarrierBytes[0]); i++) {
-        result += charToByte(modCarrierBytes[i]) + " ";
+    for (size_t i = 0; i < modCarrierBytesLength; i++) {
+        result.append(charToByte(modCarrierBytes[i]) + " ");
     }
     return result;
 }
@@ -159,3 +164,12 @@ unsigned char* SCModel::getUnmodCarrierBytes() const {
 void SCModel::setUnmodCarrierBytes(unsigned char* unmodBytes) {
     unmodCarrierBytes = unmodBytes;
 };
+
+void SCModel::setModCarrierBytesLength(size_t size) {
+    modCarrierBytesLength = size;
+}
+
+void SCModel::setUnmodCarrierBytesLength(size_t size) {
+    unmodCarrierBytesLength = size;
+}
+

@@ -21,8 +21,10 @@ public:
     std::string decode();
     unsigned char* getModCarrierBytes() const;
     void setModCarrierBytes(unsigned char* modBytes);
+    void setModCarrierBytesLength(size_t size);
     unsigned char* getUnmodCarrierBytes() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes);
+    void setUnmodCarrierBytesLength(size_t size);
 private:
     std::string charToByte(const unsigned char& c) const;
     unsigned char byteToChar(const std::string& bits) const;
@@ -30,7 +32,9 @@ private:
     std::string createHeader(const std::string& msg);
     const std::string SGN = "SGN";
     unsigned char* modCarrierBytes;
+    size_t modCarrierBytesLength;
     unsigned char* unmodCarrierBytes;
+    size_t unmodCarrierBytesLength;
 };
 
 #endif	/* SCMODEL_H */

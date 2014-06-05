@@ -81,11 +81,12 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
 
     if (openDialog.ShowModal() == wxID_OK) {
         wxImage image = openDialog.GetPath();
-        wxBitmap bitmap(image);
+        size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
         if (event.GetId() == ID_LOAD_MOD_IMG) {
             // Bild mit versteckter Nachricht wurde geladen
-            view->getModStaticBitmap()->SetBitmap(bitmap);
+            view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData());
+            model->setModCarrierBytesLength((size_t) imageBytesCount);
             wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
             view->getDecodeBtn()->Enable(true);
@@ -93,6 +94,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             // Bild ohne versteckter Nachricht wurde geladen
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData());
+            model->setUnmodCarrierBytesLength(imageBytesCount);
             view->getEncodeBtn()->Enable(true);
             // Zeige maximale Länge der Nachricht
             view->getMaxTxtLengthOutput()->Clear();
@@ -114,8 +116,7 @@ void SCPresenter::onSave(wxCommandEvent& event) {
     if (dialog.ShowModal() == wxID_OK) {
         wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
         modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->GetStatusBar()->SetStatusText(
-                "Image with secret massage saved - " + dialog.GetPath(), 1);
+        view->GetStatusBar()->SetStatusText("Image with secret massage saved - " + dialog.GetPath());
     }
 }
 
@@ -126,19 +127,21 @@ void SCPresenter::onSave(wxCommandEvent& event) {
  */
 void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
-    
+    wxImage newImage;
     if (message.IsEmpty()) {
         wxMessageDialog notationDialog(NULL,
                 wxT("You are about to encrypt an empty message.\nAre you sure you want to continue?"),
                 wxT("Notation"),
                 wxYES_NO | wxICON_EXCLAMATION);
         notationDialog.CentreOnParent();
-
+        
         switch (notationDialog.ShowModal()) {
             case wxID_YES:
                 model->encode(message.ToStdString());
-                //                wxImage image();
-                //                view->getModStaticBitmap()->SetBitmap(image.SetData(model->getModCarrierBytes()));
+                newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
+                newImage.SetData(model->getModCarrierBytes());
+                view->getModStaticBitmap()->SetBitmap(newImage);
+                view->getSaveModImgBtn()->Enable(true);
                 break;
             case wxID_NO:
                 break;
@@ -158,12 +161,15 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         model->setUnmodCarrierBytes(data);
         model->encode(message.ToStdString());
         wxString bitpattern = _(model->getModBitPattern());
-        view->getBitpatternOutput()->SetValue(bitpattern);
-        std::cout << "create image with new data.. " << std::endl;
-        wxImage image2(image.GetSize(), model->getModCarrierBytes());
+        // FIXME: Bitpatterncreation takes too much time
+        // view->getBitpatternOutput()->SetValue(bitpattern);
         std::cout << " set new image.. " << std::endl;
-        //view->getModStaticBitmap()->SetBitmap(image2);
-        
+        view->getUnmodStaticBitmap()->GetSize().GetHeight();
+        newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
+        newImage.SetData(model->getModCarrierBytes());
+        view->getModStaticBitmap()->SetBitmap(newImage);
+        std::cout << " new image is set.. " << std::endl;
+        view->getSaveModImgBtn()->Enable(true);
     }
 }
 
