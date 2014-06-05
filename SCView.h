@@ -76,8 +76,20 @@ public:
     wxTextCtrl* getBitpatternOutput() {
         return this->bitPatternOutput;
     }
+    wxMenuItem* getSaveModImgMenuItem() {
+        return this->saveModImgMenuItem;
+    }
+    wxMenuItem* getEncodeMenuItem() {
+        return this->encodeMenuItem;
+    }
+    wxMenuItem* getDecodeMenuItem() {
+        return this->decodeMenuItem;
+    }
     
 protected:
+    wxMenuItem *saveModImgMenuItem;
+    wxMenuItem *encodeMenuItem;
+    wxMenuItem *decodeMenuItem;
     wxPanel* mainPanel;
     wxScrolledWindow* unmodImgScrolledWindow;
     wxStaticBitmap* unmodStaticBitmap;

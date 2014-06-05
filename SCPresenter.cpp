@@ -59,8 +59,11 @@ bool SCPresenter::OnInit() {
  * Definiert den Startzustand des Programms.
  */
 void SCPresenter::init() {
+    view->getSaveModImgMenuItem()->Enable(false);
     view->getSaveModImgBtn()->Disable();
+    view->getEncodeMenuItem()->Enable(false);
     view->getEncodeBtn()->Disable();
+    view->getDecodeMenuItem()->Enable(false);
     view->getDecodeBtn()->Disable();
     *(view->getTxtLengthOutput()) << 0;
     *(view->getMaxTxtLengthOutput()) << 0;
