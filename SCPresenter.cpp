@@ -92,13 +92,24 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             model->setModCarrierBytesLength((size_t) imageBytesCount);
             wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
-            view->getDecodeBtn()->Enable(true);
+            if (model->checkForHeaderSignature()) {
+                std::cout << " found header with signature! " << std::endl;
+                view->getDecodeBtn()->Enable(true);
+                view->getDecodeMenuItem()->Enable(true);
+            } else {
+                wxMessageDialog notationDialog(NULL,
+                wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
+                wxT("Info"), wxOK | wxICON_WARNING);
+                notationDialog.CentreOnParent();
+                notationDialog.ShowModal();
+            }
         } else {
             // Bild ohne versteckter Nachricht wurde geladen
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData());
             model->setUnmodCarrierBytesLength(imageBytesCount);
             view->getEncodeBtn()->Enable(true);
+            view->getEncodeMenuItem()->Enable(true);
             // Zeige maximale Länge der Nachricht
             view->getMaxTxtLengthOutput()->Clear();
             *(view->getMaxTxtLengthOutput()) << getMaxTextLength();
@@ -145,6 +156,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
                 newImage.SetData(model->getModCarrierBytes());
                 view->getModStaticBitmap()->SetBitmap(newImage);
                 view->getSaveModImgBtn()->Enable(true);
+                view->getSaveModImgMenuItem()->Enable(true);
                 break;
             case wxID_NO:
                 break;
@@ -152,7 +164,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
     } else if (wxAtoi(message) > getMaxTextLength()) {
         wxMessageDialog notationDialog(NULL,
                 wxT("Sorry but your message is too long.\nSelect either a bigger image or type in a shorter message."),
-                wxT("Notation"), wxOK | wxICON_EXCLAMATION);
+                wxT("WARNING!"), wxOK | wxICON_WARNING);
         notationDialog.CentreOnParent();
         notationDialog.ShowModal();
     } else {
@@ -163,9 +175,11 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         std::cout << "parse data.. " << std::endl;
         model->setUnmodCarrierBytes(data);
         model->encode(message.ToStdString());
+        std::cout << " pattern: \n " << std::endl;
         wxString bitpattern = _(model->getModBitPattern());
         // FIXME: Bitpatterncreation takes too much time
-        // view->getBitpatternOutput()->SetValue(bitpattern);
+        std::cout << bitpattern.ToStdString() << std::endl;
+        view->getBitpatternOutput()->SetValue(bitpattern);
         std::cout << " set new image.. " << std::endl;
         view->getUnmodStaticBitmap()->GetSize().GetHeight();
         newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
@@ -173,6 +187,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         view->getModStaticBitmap()->SetBitmap(newImage);
         std::cout << " new image is set.. " << std::endl;
         view->getSaveModImgBtn()->Enable(true);
+        view->getSaveModImgMenuItem()->Enable(true);
     }
 }
 
@@ -181,9 +196,9 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
  * 
  * @param event created on the gui.
  */
-void SCPresenter::onDecode(wxCommandEvent& event) {
-    //model->decode();
-    //setMessage...
+void SCPresenter::onDecode(wxCommandEvent& event) {     
+    std::string message = model->decode();
+    view->getSecretMsgInput()->SetValue(_(message));
 }
 
 /**
@@ -227,13 +242,4 @@ int SCPresenter::getMaxTextLength() const {
         maxTxtLength = (height * width * 3) / 8 - model->getHeaderSize();
     }
     return maxTxtLength;
-}
-
-
-std::string SCPresenter::getWXMOTIF() {
-#ifdef __WXMOTIF__
-    return "Bitmap (*.bmp)|*.bmp";
-#else
-    return "Bitmap (*.bmp;*.dib)|*.bmp;*.dib";
-#endif
 }

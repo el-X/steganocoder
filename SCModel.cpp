@@ -41,15 +41,13 @@ void SCModel::encode(const string& msg) {
         byte_counter += 8;
     }
     cout << " Binary was set" << endl;
-    //FIXME größe der beiden char arrays sind nicht gleich
-    //modCarrierBytes = new unsigned char[encoded_msg_size * 8];
-    //memcpy(modCarrierBytes, unmodCarrierBytes, strlen((char*) modCarrierBytes));
-    //modCarrierBytes = new unsigned char[](unmodCarrierBytes);
+    // Bereite die Bitmap zur Modifikation
     modCarrierBytes = new unsigned char[unmodCarrierBytesLength];
     modCarrierBytesLength = unmodCarrierBytesLength;
     for (size_t i = 0; i < this->unmodCarrierBytesLength; i++) {
         modCarrierBytes[i] = unmodCarrierBytes[i];
     }
+    // Schreibe Daten in die Bitmap
     for (size_t i = 0; i < encoded_msg_size * 8; i++) {
         modCarrierBytes[i] = unmodCarrierBytes[i] & 254;
         if (binary[i] == '1') {
@@ -96,8 +94,8 @@ bool SCModel::checkForHeaderSignature() const {
 // FIXME String building takes too much time!!!
 string SCModel::getModBitPattern() {
     string result("");
-    for (size_t i = 0; i < modCarrierBytesLength; i++) {
-        result.append(charToByte(modCarrierBytes[i]) + " ");
+    for (size_t i = 0; i < 100 && i < modCarrierBytesLength; i++) {
+        result += charToByte(modCarrierBytes[i]) + " ";
     }
     return result;
 }

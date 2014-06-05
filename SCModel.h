@@ -25,10 +25,10 @@ public:
     unsigned char* getUnmodCarrierBytes() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes);
     void setUnmodCarrierBytesLength(size_t size);
+    bool checkForHeaderSignature() const;
 private:
     std::string charToByte(const unsigned char& c) const;
     unsigned char byteToChar(const std::string& bits) const;
-    bool checkForHeaderSignature() const;
     std::string createHeader(const std::string& msg);
     const std::string SGN = "SGN";
     unsigned char* modCarrierBytes;
