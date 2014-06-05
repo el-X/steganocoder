@@ -93,8 +93,6 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
             
-            
-            // FIXME: Show scrollbars!
             if (model->checkForHeaderSignature()) {
                 std::cout << " found header with signature! " << std::endl;
                 view->getDecodeBtn()->Enable(true);
@@ -117,6 +115,10 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             view->getMaxTxtLengthOutput()->Clear();
             *(view->getMaxTxtLengthOutput()) << getMaxTextLength();
         }
+        // FIXME: Show scrollbars in the right way!
+        wxSize size = view->GetSize();
+        view->SetSize(size.GetWidth() + 1, size.GetHeight() + 1);
+        view->SetSize(size);
     }
 }
 
