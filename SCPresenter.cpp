@@ -86,20 +86,23 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
         wxImage image = openDialog.GetPath();
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
         if (event.GetId() == ID_LOAD_MOD_IMG) {
-            // Bild mit versteckter Nachricht wurde geladen
+            // Es wird versucht ein Bild mit versteckter Nachricht zu geladen
             view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData());
             model->setModCarrierBytesLength((size_t) imageBytesCount);
             wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
+            
+            
+            // FIXME: Show scrollbars!
             if (model->checkForHeaderSignature()) {
                 std::cout << " found header with signature! " << std::endl;
                 view->getDecodeBtn()->Enable(true);
                 view->getDecodeMenuItem()->Enable(true);
             } else {
                 wxMessageDialog notationDialog(NULL,
-                wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
-                wxT("Info"), wxOK | wxICON_WARNING);
+                        wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
+                        wxT("Info"), wxOK | wxICON_WARNING);
                 notationDialog.CentreOnParent();
                 notationDialog.ShowModal();
             }
@@ -148,7 +151,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
                 wxT("Notation"),
                 wxYES_NO | wxICON_EXCLAMATION);
         notationDialog.CentreOnParent();
-        
+
         switch (notationDialog.ShowModal()) {
             case wxID_YES:
                 model->encode(message.ToStdString());
@@ -196,7 +199,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
  * 
  * @param event created on the gui.
  */
-void SCPresenter::onDecode(wxCommandEvent& event) {     
+void SCPresenter::onDecode(wxCommandEvent& event) {
     std::string message = model->decode();
     view->getSecretMsgInput()->SetValue(_(message));
 }
