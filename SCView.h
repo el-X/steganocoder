@@ -37,7 +37,7 @@ public:
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxSize(800, 600))
     : wxFrame(NULL, wxID_ANY, title, pos, size) {};
-    virtual ~SCView();
+    virtual ~SCView() {};
     void create();
     void doLayout();
     wxStatusBar* getStatusBar() {
@@ -113,6 +113,29 @@ protected:
     wxStaticBoxSizer* secretMsgSizer;
     wxStaticBoxSizer* modImgSizer;
     wxStaticBoxSizer* bitPatternSizer;
+    const std::string MENU_FILE = "&File";
+    const std::string MENU_EDIT = "&Edit";
+    const std::string MENU_HELP = "&Help";
+    const std::string MENUITEM_LOAD_UNMOD_IMG_TEXT = "&Load Unmodified Image...\tCtrl-U";
+    const std::string MENUITEM_LOAD_UNMOD_IMG_HELP = "Load an image that you want to encode";
+    const std::string MENUITEM_LOAD_MOD_IMG_TEXT = "&Load Modified Image...\tCtrl-M";
+    const std::string MENUITEM_LOAD_MOD_IMG_HELP = "Load an image that contains a secret message";
+    const std::string MENUITEM_SAVE_MOD_IMG_TEXT = "&Save Modified Image...\tCtrl-S";
+    const std::string MENUITEM_SAVE_MOD_IMG_HELP = "Save an image that contains a secret message";
+    const std::string MENUITEM_ENCODE_TEXT = "&Encode\tCtrl-E";
+    const std::string MENUITEM_ENCODE_HELP = "Encode the unmodified image with the secret message";
+    const std::string MENUITEM_DECODE_TEXT = "&Decode\tCtrl-D";
+    const std::string MENUITEM_DECODE_HELP = "Decode the modified image which contains a secret message";
+    const std::string BTN_LOAD_IMG = "Load Image...";
+    const std::string BTN_SAVE_IMG = "Save Image...";
+    const std::string BTN_ENCODE = "Encode";
+    const std::string BTN_DECODE = "Decode";
+    const std::string TEXT_MAX_TXT_LENGTH = "Max Text Length:";
+    const std::string TEXT_TXT_LENGTH = "Text Length:";
+    const std::string TEXT_UNMOD_IMG = "Unmodified Image";
+    const std::string TEXT_MOD_IMG = "Modified Image";
+    const std::string TEXT_SECRET_MSG = "Secret Message";
+    const std::string TEXT_BIT_PATERN = "Bit Pattern";
     void createMenuBar();
     void createUpperLeftBox();
     void createLowerLeftBox();

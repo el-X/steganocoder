@@ -10,6 +10,7 @@
 
 #include "SCView.h"
 #include "SCModel.h"
+#include "SCAboutDialog.h"
 
 class SCPresenter : public wxApp {
 public:

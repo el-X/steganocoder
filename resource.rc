@@ -1,0 +1,15 @@
+// Applikations-Icon 
+appicon ICON "images/monkey256x256.ico"
+ 
+// Menü- und Button-Icons
+about16x16 RCDATA "images/about16x16.png"
+copyleft15x15 RCDATA "images/copyleft15x15.png"
+decode16x16 RCDATA "images/decode16x16.png"
+encode16x16 RCDATA "images/encode16x16.png"
+exit16x16 RCDATA "images/exit16x16.png"
+open16x16 RCDATA "images/open16x16.png"
+save16x16 RCDATA "images/save16x16.png"
+monkey180x180 RCDATA "images/monkey180x180.png"
+
+// Look and Feel des Betriebssystems
+#include "wx/msw/wx.rc"

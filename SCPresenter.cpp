@@ -236,7 +236,8 @@ void SCPresenter::onExit(wxCommandEvent& event) {
 }
 
 void SCPresenter::onAbout(wxCommandEvent& event) {
-    wxMessageBox("SteganoCoder", "About SteganoCoder", wxOK | wxICON_INFORMATION);
+    SCAboutDialog about(view);
+    about.ShowModal();
 }
 
 int SCPresenter::getMaxTextLength() const {
