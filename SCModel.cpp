@@ -33,7 +33,7 @@ void SCModel::encode(const string& msg) {
     cout << " EncMsgSize: " << encoded_msg_size << endl;
     size_t byte_counter = 0;
     for (size_t i = 0; i < encoded_msg_size; i++) {
-        string byte = charToByte(encoded_msg.at(i));
+        string byte = charToBits(encoded_msg.at(i));
         //Bits setzen
         for (size_t j = 0; j < 8; j++) {
             binary[byte_counter + j] = byte.at(j);
@@ -75,7 +75,7 @@ string SCModel::decode() {
     for (size_t i = 0; i < 4; i++) {
         for (size_t j = 0; j < 8; j++) {
             //modCarrierBytes im ersten Fall von 24 enthält nichts!! -> crash
-            msg_binary_size += charToByte(modCarrierBytes[msgSizeOffset + i*8 + j]).at(7);
+            msg_binary_size += charToBits(modCarrierBytes[msgSizeOffset + i*8 + j]).at(7);
         }
         cout << " Bits msgSize " << msg_binary_size << endl;
     }
@@ -101,11 +101,11 @@ bool SCModel::checkForHeaderSignature() const {
         string modCarrierBytesAsBit("");
         size_t offset = i*8;
         for (size_t j = 0; j < 8; j++) {
-            modCarrierBytesAsBit += charToByte(modCarrierBytes[offset + j]).at(7);
+            modCarrierBytesAsBit += charToBits(modCarrierBytes[offset + j]).at(7);
         }
         cout << modCarrierBytesAsBit << endl;
-        cout << "SGN:" << SGN[i] << " Mod:" << byteToChar(modCarrierBytesAsBit) << endl;
-        if (SGN[i] != byteToChar(modCarrierBytesAsBit)) {
+        cout << "SGN:" << SGN[i] << " Mod:" << bitsToChar(modCarrierBytesAsBit) << endl;
+        if (SGN[i] != bitsToChar(modCarrierBytesAsBit)) {
             return false;
         }
     }
@@ -116,7 +116,7 @@ bool SCModel::checkForHeaderSignature() const {
 string SCModel::getModBitPattern() {
     string result("");
     for (size_t i = 0; i < 100 && i < modCarrierBytesLength; i++) {
-        result += charToByte(modCarrierBytes[i]) + " ";
+        result += charToBits(modCarrierBytes[i]) + " ";
     }
     return result;
 }
@@ -134,7 +134,7 @@ string SCModel::createHeader(const std::string& msg) {
         byte = "";
         byte = strBits.substr(i * 8, 8);
         cout << " " << i << " byte: " << byte << endl;
-        header += byteToChar(byte);
+        header += bitsToChar(byte);
     }
     cout << " Header is: " << header << " " << header.size() << endl;
     return header;
@@ -144,7 +144,7 @@ string SCModel::createHeader(const std::string& msg) {
  * Returns an bit representation of an unsigned char as string.
  * Example: 'A' is "01000001"
  */
-string SCModel::charToByte(const unsigned char& c) const {
+string SCModel::charToBits(const unsigned char& c) const {
     string bits = "";
     for (int i = 7; i >= 0; i--) {
         bits.append((c & (1 << i)) ? "1" : "0");
@@ -156,7 +156,7 @@ string SCModel::charToByte(const unsigned char& c) const {
  * Returns an unsigned char of given bit representation for an unsigned char.
  * Example: "01000001" is 'A'
  */
-unsigned char SCModel::byteToChar(const std::string& bits) const {
+unsigned char SCModel::bitsToChar(const std::string& bits) const {
     assert(bits.size() == 8);
     std::bitset < 8 > bitsArray(bits);
     unsigned int asciiPos = bitsArray.to_ulong();

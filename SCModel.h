@@ -27,8 +27,8 @@ public:
     void setUnmodCarrierBytesLength(size_t size);
     bool checkForHeaderSignature() const;
 private:
-    std::string charToByte(const unsigned char& c) const;
-    unsigned char byteToChar(const std::string& bits) const;
+    std::string charToBits(const unsigned char& c) const;
+    unsigned char bitsToChar(const std::string& bits) const;
     std::string createHeader(const std::string& msg);
     const std::string SGN = "SGN";
     unsigned char* modCarrierBytes;
