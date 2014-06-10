@@ -84,11 +84,13 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
 
     if (openDialog.ShowModal() == wxID_OK) {
         wxImage image = openDialog.GetPath();
+        //Hoehe x Breite x RGB
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
         if (event.GetId() == ID_LOAD_MOD_IMG) {
-            // Es wird versucht ein Bild mit versteckter Nachricht zu geladen
+            // Es wird versucht ein Bild mit versteckter Nachricht zu laden
             view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData());
+            //cout << model->getModCarrierBytes()[0] << " " << image.GetData()[0] << endl;
             model->setModCarrierBytesLength((size_t) imageBytesCount);
             wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
@@ -98,6 +100,8 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
                 view->getDecodeBtn()->Enable(true);
                 view->getDecodeMenuItem()->Enable(true);
             } else {
+                view->getDecodeBtn()->Enable(false);
+                view->getDecodeMenuItem()->Enable(false);
                 wxMessageDialog notationDialog(NULL,
                         wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
                         wxT("Info"), wxOK | wxICON_WARNING);
@@ -236,8 +240,8 @@ void SCPresenter::onExit(wxCommandEvent& event) {
 }
 
 void SCPresenter::onAbout(wxCommandEvent& event) {
-    SCAboutDialog about(view);
-    about.ShowModal();
+//    SCAboutDialog about(view);
+//    about.ShowModal();
 }
 
 int SCPresenter::getMaxTextLength() const {
