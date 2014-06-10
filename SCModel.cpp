@@ -45,9 +45,11 @@ void SCModel::encode(const string& msg) {
     modCarrierBytes = new unsigned char[unmodCarrierBytesLength];
     modCarrierBytesLength = unmodCarrierBytesLength;
     // Kopiere das unmodifiziert Bild Bit für Bit in das modifizierte Bild
-    for (size_t i = 0; i < this->unmodCarrierBytesLength; i++) {
+    cout << "Kopiere Byte fuer Byte aus Unmod in Mod" << endl;
+    for (size_t i = 0; i < unmodCarrierBytesLength; i++) {
         modCarrierBytes[i] = unmodCarrierBytes[i];
     }
+    cout << "Kopie fertig" << endl;
     // Schreibe Daten in die Bitmap, indem die Bits beim modifizierten Bild
     // verändert werden
     for (size_t i = 0; i < encoded_msg_size * 8; i++) {
@@ -84,10 +86,13 @@ string SCModel::decode() {
     char* binary = new char[msg_size * 8];
     unsigned int byte_counter = 0;
 
+    cout << "Binary Message with Header" << getHeaderSize() << endl;
     for (size_t i = getHeaderSize()*8; i < (msg_size + getHeaderSize())*8; i++) {
-        binary[byte_counter] = modCarrierBytes[i] & 1;
+        binary[byte_counter] = modCarrierBytes[i] & 00000001;
         byte_counter += 1;
+        cout << binary[byte_counter];
     }
+    cout << binary << endl;
     for (unsigned int i = 0; i < msg_size * 8; i++) {
         decoded_msg += binary[i];
     }
@@ -167,16 +172,30 @@ unsigned char* SCModel::getModCarrierBytes() const {
     return modCarrierBytes;
 };
 
-void SCModel::setModCarrierBytes(unsigned char* modBytes) {
-    modCarrierBytes = modBytes;
+void SCModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
+    //modCarrierBytes = modBytes;
+    modCarrierBytes = new unsigned char[len];
+    modCarrierBytesLength = len;
+    cout << "SetModCarrier" << endl;
+    for(size_t i=0; i<len; i++) {
+        modCarrierBytes[i] = modBytes[i];
+    }
+    cout << "End SetModCarrier" << endl;
 };
 
 unsigned char* SCModel::getUnmodCarrierBytes() const {
     return unmodCarrierBytes;
 };
 
-void SCModel::setUnmodCarrierBytes(unsigned char* unmodBytes) {
-    unmodCarrierBytes = unmodBytes;
+void SCModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
+    //unmodCarrierBytes = unmodBytes;
+    unmodCarrierBytes = new unsigned char[len];
+    unmodCarrierBytesLength = len;
+    cout << "SetUnModCarrier" << endl;
+    for(size_t i=0; i<len; i++) {
+        unmodCarrierBytes[i] = unmodBytes[i];
+    }
+    cout << "End SetUnModCarrier" << endl;
 };
 
 void SCModel::setModCarrierBytesLength(size_t size) {

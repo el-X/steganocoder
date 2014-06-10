@@ -89,7 +89,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
         if (event.GetId() == ID_LOAD_MOD_IMG) {
             // Es wird versucht ein Bild mit versteckter Nachricht zu laden
             view->getModStaticBitmap()->SetBitmap(image);
-            model->setModCarrierBytes(image.GetData());
+            model->setModCarrierBytes(image.GetData(), (size_t) imageBytesCount);
             //cout << model->getModCarrierBytes()[0] << " " << image.GetData()[0] << endl;
             model->setModCarrierBytesLength((size_t) imageBytesCount);
             wxString bitPattern = _(model->getModBitPattern());
@@ -111,7 +111,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
         } else {
             // Bild ohne versteckter Nachricht wurde geladen
             view->getUnmodStaticBitmap()->SetBitmap(image);
-            model->setUnmodCarrierBytes(image.GetData());
+            model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
             model->setUnmodCarrierBytesLength(imageBytesCount);
             view->getEncodeBtn()->Enable(true);
             view->getEncodeMenuItem()->Enable(true);
@@ -182,7 +182,9 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         std::cout << "get data.. " << std::endl;
         unsigned char* data = image.GetData();
         std::cout << "parse data.. " << std::endl;
-        model->setUnmodCarrierBytes(data);
+        //TODO: PRÜFUNG, IST HIER DIE LÄNGE KORREKT? VORHER WURDE SIE NICHT GESETZT!
+        size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
+        model->setUnmodCarrierBytes(data, imageBytesCount);
         model->encode(message.ToStdString());
         std::cout << " pattern: \n " << std::endl;
         wxString bitpattern = _(model->getModBitPattern());
