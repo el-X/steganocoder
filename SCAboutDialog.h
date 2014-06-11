@@ -31,7 +31,7 @@ class SCAboutDialog : public wxDialog {
 public:
 
     SCAboutDialog(wxWindow* parent, wxWindowID id = wxID_ANY,
-            const wxString& title = _("About SteganoCoder"),
+            const wxString& title = wxEmptyString,
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize);
 
@@ -51,6 +51,7 @@ protected:
     wxStaticText* clipartLabel;
     wxHyperlinkCtrl* clipartLink;
     const wxFont& FONT_BOLD = wxFont(11, 74, 90, 92, false, _("Arial"));
+    const std::string& TEXT_TITLE = "About SteganoMonkey";
     const std::string& TEXT_DEVELOPER_HEADING = "Developers: ";
     const std::string& TEXT_DEVELOPER1 = "Thomas Matern";
     const std::string& TEXT_DEVELOPER2 = "Robert Heimsoth, Alexander Keller";

@@ -10,6 +10,7 @@
 SCAboutDialog::SCAboutDialog(wxWindow* parent, wxWindowID id,
         const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxDialog(parent, id, title, pos, size) {
+    this->SetTitle(_(TEXT_TITLE));
     this->create();
     this->doLayout();
 }

@@ -56,7 +56,7 @@ bool SCPresenter::OnInit() {
 
     model = new SCModel();
     this->init();
-    view->getStatusBar()->SetStatusText(_("Willkommen bei SteganoMonkey!"));
+    view->getStatusBar()->SetStatusText(_("Welcome to SteganoMonkey!"));
     return true;
 }
 
@@ -125,10 +125,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             this->setEncodingAllowed(true);
             this->setDecodingAllowed(false);
         }
-        // FIXME: Show scrollbars in the right way!
-        wxSize size = view->GetSize();
-        view->SetSize(size.GetWidth() + 1, size.GetHeight() + 1);
-        view->SetSize(size);
+        view->Layout();
     }
 }
 
