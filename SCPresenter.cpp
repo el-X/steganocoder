@@ -18,6 +18,8 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 IMPLEMENT_APP(SCPresenter)
 
 // Mapping für die Events vornehmen
@@ -42,7 +44,8 @@ wxEND_EVENT_TABLE()
  * Die main-Funktion des Programms.
  */
 bool SCPresenter::OnInit() {
-    wxInitAllImageHandlers();
+    this->initImageHandlers();
+    
     view = new SCView();
     view->showSplashScreen();
     view->SetMinSize(wxSize(800, 600));
@@ -53,7 +56,7 @@ bool SCPresenter::OnInit() {
 
     model = new SCModel();
     this->init();
-    view->getStatusBar()->SetStatusText(_("Welcome to SteganoCoder!"));
+    view->getStatusBar()->SetStatusText(_("Willkommen bei SteganoMonkey!"));
     return true;
 }
 
@@ -61,14 +64,22 @@ bool SCPresenter::OnInit() {
  * Definiert den Startzustand des Programms.
  */
 void SCPresenter::init() {
-    view->getSaveModImgMenuItem()->Enable(false);
-    view->getSaveModImgBtn()->Disable();
-    view->getEncodeMenuItem()->Enable(false);
-    view->getEncodeBtn()->Disable();
-    view->getDecodeMenuItem()->Enable(false);
-    view->getDecodeBtn()->Disable();
-    *(view->getTxtLengthOutput()) << 0;
-    *(view->getMaxTxtLengthOutput()) << 0;
+    this->setSaveAllowed(false);
+    this->setEncodingAllowed(false);
+    this->setDecodingAllowed(false);
+    view->getTxtLengthOutput()->SetValue(to_string(0));
+    view->getMaxTxtLengthOutput()->SetValue(to_string(0));
+}
+
+/**
+ * Initialisiert die Handler für die genutzten Bildformate.
+ */
+void SCPresenter::initImageHandlers() {
+    wxImage::AddHandler(new wxBMPHandler);
+    wxImage::AddHandler(new wxPNGHandler);
+    wxImage::AddHandler(new wxJPEGHandler);
+    wxImage::AddHandler(new wxGIFHandler);
+    wxImage::AddHandler(new wxICOHandler);
 }
 
 /**
@@ -81,29 +92,23 @@ void SCPresenter::init() {
 void SCPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
             _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif"));
-    openDialog.SetDirectory(wxGetHomeDir()); // OS independency
+    openDialog.SetDirectory(wxGetHomeDir());
     openDialog.CentreOnParent();
 
     if (openDialog.ShowModal() == wxID_OK) {
         wxImage image = openDialog.GetPath();
-        //Hoehe x Breite x RGB
+        // Anzahl der Bytes = Hoehe x Breite x RGB
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
         if (event.GetId() == SCView::ID_LOAD_MOD_IMG) {
             // Es wird versucht ein Bild mit versteckter Nachricht zu laden
             view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData(), (size_t) imageBytesCount);
-            //cout << model->getModCarrierBytes()[0] << " " << image.GetData()[0] << endl;
-            model->setModCarrierBytesLength((size_t) imageBytesCount);
-            wxString bitPattern = _(model->getModBitPattern());
-            view->getBitpatternOutput()->SetValue(bitPattern);
-
+            view->getBitpatternOutput()->SetValue(model->getModBitPattern());
+            // Prüfen ob das Bild eine verstekcte Nachricht enthält.
             if (model->checkForHeaderSignature()) {
-                std::cout << " found header with signature! " << std::endl;
-                view->getDecodeBtn()->Enable();
-                view->getDecodeMenuItem()->Enable();
+                this->setDecodingAllowed(true);
             } else {
-                view->getDecodeBtn()->Disable();
-                view->getDecodeMenuItem()->Enable(false);
+                this->setDecodingAllowed(false);
                 wxMessageDialog notationDialog(NULL,
                         wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
                         wxT("Info"), wxOK | wxICON_WARNING);
@@ -111,15 +116,11 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
                 notationDialog.ShowModal();
             }
         } else {
-            // Bild ohne versteckter Nachricht wurde geladen
+            // Bild ohne versteckter Nachricht wurde geladen.
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
-            model->setUnmodCarrierBytesLength(imageBytesCount);
-            view->getEncodeBtn()->Enable(true);
-            view->getEncodeMenuItem()->Enable(true);
-            // Zeige maximale Länge der Nachricht
-            view->getMaxTxtLengthOutput()->Clear();
-            *(view->getMaxTxtLengthOutput()) << getMaxTextLength();
+            // Zeige maximale Länge der Nachricht.
+            view->getMaxTxtLengthOutput()->SetValue(to_string(getMaxTextLength()));
         }
         // FIXME: Show scrollbars in the right way!
         wxSize size = view->GetSize();
@@ -141,7 +142,7 @@ void SCPresenter::onSave(wxCommandEvent& event) {
     if (dialog.ShowModal() == wxID_OK) {
         wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
         modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->GetStatusBar()->SetStatusText("Image with secret massage saved - " + dialog.GetPath());
+        view->GetStatusBar()->SetStatusText("Bild mit versteckter Nachricht gespeichert unter: " + dialog.GetPath());
     }
 }
 
@@ -153,40 +154,18 @@ void SCPresenter::onSave(wxCommandEvent& event) {
 void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
     wxImage newImage;
-    if (message.IsEmpty()) {
+    if (wxAtoi(message) > getMaxTextLength()) {
+        // TODO raus, da es in die status bar geschrieben werden soll
         wxMessageDialog notationDialog(NULL,
-                wxT("You are about to encrypt an empty message.\nAre you sure you want to continue?"),
-                wxT("Notation"),
-                wxYES_NO | wxICON_EXCLAMATION);
-        notationDialog.CentreOnParent();
-
-        switch (notationDialog.ShowModal()) {
-            case wxID_YES:
-                model->encode(message.ToStdString());
-                newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
-                newImage.SetData(model->getModCarrierBytes());
-                view->getModStaticBitmap()->SetBitmap(newImage);
-                view->getSaveModImgBtn()->Enable(true);
-                view->getSaveModImgMenuItem()->Enable(true);
-                break;
-            case wxID_NO:
-                break;
-        }
-    } else if (wxAtoi(message) > getMaxTextLength()) {
-        wxMessageDialog notationDialog(NULL,
-                wxT("Sorry but your message is too long.\nSelect either a bigger image or type in a shorter message."),
+                wxT("Tut uns leid, das Bild ist zu klein für die Nachricht!"),
                 wxT("WARNING!"), wxOK | wxICON_WARNING);
         notationDialog.CentreOnParent();
         notationDialog.ShowModal();
     } else {
-        std::cout << "get data for encode.." << std::endl;
+        // Das Bild ohne Nachricht holen.
         wxImage image = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
-        std::cout << "get data.. " << std::endl;
-        unsigned char* data = image.GetData();
-        std::cout << "parse data.. " << std::endl;
-        //TODO: PRÜFUNG, IST HIER DIE LÄNGE KORREKT? VORHER WURDE SIE NICHT GESETZT!
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
-        model->setUnmodCarrierBytes(data, imageBytesCount);
+        model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
         model->encode(message.ToStdString());
         std::cout << " pattern: \n " << std::endl;
         wxString bitpattern = _(model->getModBitPattern());
@@ -199,8 +178,8 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         newImage.SetData(model->getModCarrierBytes());
         view->getModStaticBitmap()->SetBitmap(newImage);
         std::cout << " new image is set.. " << std::endl;
-        view->getSaveModImgBtn()->Enable(true);
-        view->getSaveModImgMenuItem()->Enable(true);
+        view->getSaveModImgBtn()->Enable();
+        view->getSaveModImgMenuItem()->Enable();
     }
 }
 
@@ -210,8 +189,9 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
  * @param event created on the gui.
  */
 void SCPresenter::onDecode(wxCommandEvent& event) {
-    std::string message = model->decode();
-    view->getSecretMsgInput()->SetValue(_(message));
+    view->getSecretMsgInput()->SetValue(model->decode());
+    view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
+    this->setEncodingAllowed(false);
 }
 
 /**
@@ -222,21 +202,30 @@ void SCPresenter::onDecode(wxCommandEvent& event) {
  * @param event created on the gui.
  */
 void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
-    // Ersetze alle nicht ASCII Zeichen
-    wxString rawInput = view->getSecretMsgInput()->GetValue();
-    wxString filtered = view->getSecretMsgInput()->GetValue();
+    // TODO statusbar nachricht (warnung) ausgeben wenn zu lange nachricht!
+    // Ersetze alle nicht ASCII Zeichen.
+    wxTextCtrl* msgInput = view->getSecretMsgInput();
+    wxString rawInput = msgInput->GetValue();
+    wxString filtered = rawInput;
     wxRegEx reg;
     if (reg.Compile(wxT("[ÄÖÜäöüß*]"))) {
         reg.Replace(&filtered, wxT("?")); // gemäß der Maske ersetzen
     }
+    // Aktualisiere das Eingabefeld nur wenn sich was ändert.
     if (rawInput.compare(filtered) != 0) {
-        view->getSecretMsgInput()->SetValue(filtered);
-        view->getSecretMsgInput()->SetInsertionPointEnd();
+        msgInput->SetValue(filtered);
+        msgInput->SetInsertionPointEnd();
     }
-    // Aktualisiere die angezeigte Länge der Nachricht
-    view->getTxtLengthOutput()->Clear();
-    int size = view->getSecretMsgInput()->GetValue().size();
-    *(view->getTxtLengthOutput()) << size;
+    // Aktualisiere die angezeigte Länge der Nachricht.
+    wxTextCtrl* msgLen = view->getTxtLengthOutput();
+    int size = msgInput->GetValue().size();
+    msgLen->SetValue(std::to_string(size));
+    // Deaktiviere bzw. aktiviere encode.
+    if (size = 0 && size < getMaxTextLength()) {
+        this->setEncodingAllowed(false);
+    } else {
+        this->setEncodingAllowed(true);
+    }
 }
 
 void SCPresenter::onExit(wxCommandEvent& event) {
@@ -244,6 +233,7 @@ void SCPresenter::onExit(wxCommandEvent& event) {
 }
 
 void SCPresenter::onAbout(wxCommandEvent& event) {
+    view->getAboutDialog()->Centre();
     view->getAboutDialog()->ShowModal();
 }
 
@@ -256,3 +246,20 @@ int SCPresenter::getMaxTextLength() const {
     }
     return maxTxtLength;
 }
+
+void SCPresenter::setEncodingAllowed(bool allowed) {
+    view->getEncodeBtn()->Enable(allowed);
+    view->getEncodeMenuItem()->Enable(allowed);
+}
+
+void SCPresenter::setDecodingAllowed(bool allowed) {
+    view->getDecodeBtn()->Enable(allowed);
+    view->getDecodeMenuItem()->Enable(allowed);
+}
+
+void SCPresenter::setSaveAllowed(bool allowed) {
+    view->getSaveModImgBtn()->Enable(allowed);
+    view->getSaveModImgMenuItem()->Enable(allowed);
+}
+
+

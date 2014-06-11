@@ -19,6 +19,7 @@ private:
     SCView* view;
     SCModel* model;
     void init();
+    void initImageHandlers();
     void onOpen(wxCommandEvent& event);
     void onClose(wxCommandEvent& event);
     void onLoad(wxCommandEvent& event);
@@ -29,6 +30,9 @@ private:
     void onAbout(wxCommandEvent& event);
     void onExit(wxCommandEvent& event);
     int getMaxTextLength() const;
+    void setEncodingAllowed(bool allowed);
+    void setDecodingAllowed(bool allowed);
+    void setSaveAllowed(bool allowed);
     wxDECLARE_EVENT_TABLE();
 };
 
