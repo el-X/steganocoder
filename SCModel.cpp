@@ -84,17 +84,29 @@ string SCModel::decode() {
     unsigned int msg_size = bitset < 32 > (msg_binary_size).to_ulong();
     cout << " Msg size: " << msg_size << endl;
     char* binary = new char[msg_size * 8];
-    unsigned int byte_counter = 0;
+    size_t byte_counter = 0;
 
     cout << "Binary Message with Header" << getHeaderSize() << endl;
     for (size_t i = getHeaderSize()*8; i < (msg_size + getHeaderSize())*8; i++) {
-        binary[byte_counter] = modCarrierBytes[i] & 00000001;
+        binary[byte_counter] = charToBits(modCarrierBytes[i]).at(7);
         byte_counter += 1;
         cout << binary[byte_counter];
     }
     cout << binary << endl;
-    for (unsigned int i = 0; i < msg_size * 8; i++) {
-        decoded_msg += binary[i];
+    string decoded_msg_buffer("");
+    byte_counter = 0;
+    for (size_t i = 0; i < msg_size * 8; i++) {
+        //Baue einzelnes Zeichen aus 8 Bits zusammen...
+        decoded_msg_buffer += binary[i];
+        byte_counter++;
+        
+        //und füge es dann der MSG hinzu
+        if(byte_counter == 8) {
+            decoded_msg += bitsToChar(decoded_msg_buffer);
+            decoded_msg_buffer = "";
+            byte_counter = 0;
+        }
+        
     }
     return decoded_msg;
 }
