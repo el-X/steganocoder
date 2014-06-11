@@ -11,9 +11,10 @@
  * Erstellt alle GUI-Elemente des Fensters.
  */
 void SCView::create() {
+    aboutDialog = new SCAboutDialog(this);
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-
-//    this->SetIcon(wxICON(appicon));
+    
+    this->SetIcon(wxICON(appicon));
     this->createMenuBar();
     this->createUpperLeftBox();
     this->createLowerLeftBox();
@@ -73,38 +74,38 @@ void SCView::createMenuBar() {
     wxMenu *menuFile = new wxMenu;    
     wxMenuItem *loadUnmodImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_UNMOD_IMG, 
             _(MENUITEM_LOAD_UNMOD_IMG_TEXT), _(MENUITEM_LOAD_UNMOD_IMG_HELP));
-//    loadUnmodImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
+    loadUnmodImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
     menuFile->Append(loadUnmodImgMenuItem);
     menuFile->AppendSeparator();
     
     wxMenuItem *loadModImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_MOD_IMG, 
                 _(MENUITEM_LOAD_MOD_IMG_TEXT), _(MENUITEM_LOAD_MOD_IMG_HELP));
-//    loadModImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
+    loadModImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
     menuFile->Append(loadModImgMenuItem);
     
     saveModImgMenuItem = new wxMenuItem(menuFile, ID_SAVE_MOD_IMG, 
             _(MENUITEM_SAVE_MOD_IMG_TEXT), _(MENUITEM_SAVE_MOD_IMG_HELP));
-//    saveModImgMenuItem->SetBitmap(wxBITMAP_PNG(save16x16));
+    saveModImgMenuItem->SetBitmap(wxBITMAP_PNG(save16x16));
     menuFile->Append(saveModImgMenuItem);
     menuFile->AppendSeparator();
     
     wxMenuItem *exitMenuItem = new wxMenuItem(menuFile, wxID_EXIT);
-//    exitMenuItem->SetBitmap(wxBITMAP_PNG(exit16x16));
+    exitMenuItem->SetBitmap(wxBITMAP_PNG(exit16x16));
     menuFile->Append(exitMenuItem);
 
     // Edit
     wxMenu *menuEdit = new wxMenu;
     encodeMenuItem = new wxMenuItem(menuEdit, ID_ENCODE, _(MENUITEM_ENCODE_TEXT), _(MENUITEM_ENCODE_HELP));
-//    encodeMenuItem->SetBitmap(wxBITMAP_PNG(encode16x16));
+    encodeMenuItem->SetBitmap(wxBITMAP_PNG(encode16x16));
     menuEdit->Append(encodeMenuItem);
     decodeMenuItem = new wxMenuItem(menuEdit, ID_DECODE, _(MENUITEM_DECODE_TEXT), _(MENUITEM_DECODE_HELP));
-//    decodeMenuItem->SetBitmap(wxBITMAP_PNG(decode16x16));
+    decodeMenuItem->SetBitmap(wxBITMAP_PNG(decode16x16));
     menuEdit->Append(decodeMenuItem);
 
     // Help
     wxMenu *menuHelp = new wxMenu;
     wxMenuItem *aboutMenuItem = new wxMenuItem(menuHelp, wxID_ABOUT);
-//    aboutMenuItem->SetBitmap(wxBITMAP_PNG(about16x16));
+    aboutMenuItem->SetBitmap(wxBITMAP_PNG(about16x16));
     menuHelp->Append(aboutMenuItem);
 
     wxMenuBar *menuBar = new wxMenuBar;
@@ -146,9 +147,9 @@ void SCView::createLowerLeftBox() {
  */
 void SCView::createMiddleBox() {
     encodeBtn = new wxButton(mainPanel, ID_ENCODE, _(BTN_ENCODE), wxDefaultPosition, wxDefaultSize, 0);
-//    encodeBtn->SetBitmap(wxBITMAP_PNG(encode16x16), wxRIGHT);
+    encodeBtn->SetBitmap(wxBITMAP_PNG(encode16x16), wxRIGHT);
     decodeBtn = new wxButton(mainPanel, ID_DECODE, _(BTN_DECODE), wxDefaultPosition, wxDefaultSize, 0);
-//    decodeBtn->SetBitmap(wxBITMAP_PNG(decode16x16), wxLEFT);
+    decodeBtn->SetBitmap(wxBITMAP_PNG(decode16x16), wxLEFT);
 }
 
 /**

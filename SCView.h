@@ -31,8 +31,19 @@
 #include <wx/frame.h>
 #include <wx/menu.h>
 
+#include "SCAboutDialog.h"
+
 class SCView : public wxFrame {
 public:
+    // Die IDs für die Events
+    enum EVENT_ID {
+        ID_LOAD_UNMOD_IMG = 1,
+        ID_LOAD_MOD_IMG = 2,
+        ID_SAVE_MOD_IMG = 3,
+        ID_ENCODE = 4,
+        ID_DECODE = 5,
+        ID_SECRET_MSG = 6
+    };
     SCView(const wxString& title = _("SteganoCoder"),
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxSize(800, 600))
@@ -85,6 +96,9 @@ public:
     wxMenuItem* getDecodeMenuItem() {
         return this->decodeMenuItem;
     }
+    SCAboutDialog* getAboutDialog() {
+        return this->aboutDialog;
+    }
     
 protected:
     wxMenuItem *saveModImgMenuItem;
@@ -113,6 +127,7 @@ protected:
     wxStaticBoxSizer* secretMsgSizer;
     wxStaticBoxSizer* modImgSizer;
     wxStaticBoxSizer* bitPatternSizer;
+    SCAboutDialog* aboutDialog;
     const std::string MENU_FILE = "&File";
     const std::string MENU_EDIT = "&Edit";
     const std::string MENU_HELP = "&Help";
@@ -146,16 +161,6 @@ protected:
     void layoutLowerLeftBox();
     void layoutUpperRightBox();
     void layoutLowerRightBox();
-};
-
-// Die IDs für die Events
-enum EVENT_ID {
-    ID_LOAD_UNMOD_IMG = 1,
-    ID_LOAD_MOD_IMG = 2,
-    ID_SAVE_MOD_IMG = 3,
-    ID_ENCODE = 4,
-    ID_DECODE = 5,
-    ID_SECRET_MSG = 6
 };
 
 #endif	/* SCVIEW_H */

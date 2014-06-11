@@ -22,20 +22,21 @@ IMPLEMENT_APP(SCPresenter)
 
 // Mapping für die Events vornehmen
 wxBEGIN_EVENT_TABLE(SCPresenter, wxApp)
-EVT_MENU(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
-EVT_BUTTON(ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
-EVT_MENU(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
-EVT_BUTTON(ID_LOAD_MOD_IMG, SCPresenter::onLoad)
-EVT_MENU(ID_SAVE_MOD_IMG, SCPresenter::onSave)
-EVT_BUTTON(ID_SAVE_MOD_IMG, SCPresenter::onSave)
-EVT_MENU(ID_ENCODE, SCPresenter::onEncode)
-EVT_BUTTON(ID_ENCODE, SCPresenter::onEncode)
-EVT_MENU(ID_DECODE, SCPresenter::onDecode)
-EVT_BUTTON(ID_DECODE, SCPresenter::onDecode)
-EVT_TEXT(ID_SECRET_MSG, SCPresenter::onSecretMessageChange)
-EVT_MENU(wxID_EXIT, SCPresenter::onExit)
-EVT_MENU(wxID_ABOUT, SCPresenter::onAbout)
+    EVT_MENU(SCView::ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
+    EVT_BUTTON(SCView::ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
+    EVT_MENU(SCView::ID_LOAD_MOD_IMG, SCPresenter::onLoad)
+    EVT_BUTTON(SCView::ID_LOAD_MOD_IMG, SCPresenter::onLoad)
+    EVT_MENU(SCView::ID_SAVE_MOD_IMG, SCPresenter::onSave)
+    EVT_BUTTON(SCView::ID_SAVE_MOD_IMG, SCPresenter::onSave)
+    EVT_MENU(SCView::ID_ENCODE, SCPresenter::onEncode)
+    EVT_BUTTON(SCView::ID_ENCODE, SCPresenter::onEncode)
+    EVT_MENU(SCView::ID_DECODE, SCPresenter::onDecode)
+    EVT_BUTTON(SCView::ID_DECODE, SCPresenter::onDecode)
+    EVT_TEXT(SCView::ID_SECRET_MSG, SCPresenter::onSecretMessageChange)
+    EVT_MENU(wxID_EXIT, SCPresenter::onExit)
+    EVT_MENU(wxID_ABOUT, SCPresenter::onAbout)
 wxEND_EVENT_TABLE()
+
 
 /**
  * Die main-Funktion des Programms.
@@ -86,7 +87,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
         wxImage image = openDialog.GetPath();
         //Hoehe x Breite x RGB
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
-        if (event.GetId() == ID_LOAD_MOD_IMG) {
+        if (event.GetId() == SCView::ID_LOAD_MOD_IMG) {
             // Es wird versucht ein Bild mit versteckter Nachricht zu laden
             view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData(), (size_t) imageBytesCount);
@@ -94,13 +95,13 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             model->setModCarrierBytesLength((size_t) imageBytesCount);
             wxString bitPattern = _(model->getModBitPattern());
             view->getBitpatternOutput()->SetValue(bitPattern);
-            
+
             if (model->checkForHeaderSignature()) {
                 std::cout << " found header with signature! " << std::endl;
-                view->getDecodeBtn()->Enable(true);
-                view->getDecodeMenuItem()->Enable(true);
+                view->getDecodeBtn()->Enable();
+                view->getDecodeMenuItem()->Enable();
             } else {
-                view->getDecodeBtn()->Enable(false);
+                view->getDecodeBtn()->Disable();
                 view->getDecodeMenuItem()->Enable(false);
                 wxMessageDialog notationDialog(NULL,
                         wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
@@ -242,8 +243,7 @@ void SCPresenter::onExit(wxCommandEvent& event) {
 }
 
 void SCPresenter::onAbout(wxCommandEvent& event) {
-//    SCAboutDialog about(view);
-//    about.ShowModal();
+    view->getAboutDialog()->ShowModal();
 }
 
 int SCPresenter::getMaxTextLength() const {
