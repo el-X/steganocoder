@@ -44,6 +44,7 @@ wxEND_EVENT_TABLE()
 bool SCPresenter::OnInit() {
     wxInitAllImageHandlers();
     view = new SCView();
+    view->showSplashScreen();
     view->SetMinSize(wxSize(800, 600));
     view->create();
     view->doLayout();

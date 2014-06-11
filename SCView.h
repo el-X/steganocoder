@@ -30,6 +30,7 @@
 #include <wx/statusbr.h>
 #include <wx/frame.h>
 #include <wx/menu.h>
+#include <wx/splash.h>
 
 #include "SCAboutDialog.h"
 
@@ -51,6 +52,7 @@ public:
     virtual ~SCView() {};
     void create();
     void doLayout();
+    void showSplashScreen();
     wxStatusBar* getStatusBar() {
         return this->statusBar;
     }
@@ -101,6 +103,7 @@ public:
     }
     
 protected:
+    wxSplashScreen* splash;
     wxMenuItem *saveModImgMenuItem;
     wxMenuItem *encodeMenuItem;
     wxMenuItem *decodeMenuItem;

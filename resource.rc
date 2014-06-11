@@ -9,7 +9,8 @@ encode16x16 RCDATA "images/encode16x16.png"
 exit16x16 RCDATA "images/exit16x16.png"
 open16x16 RCDATA "images/open16x16.png"
 save16x16 RCDATA "images/save16x16.png"
-monkey180x180 RCDATA "images/monkey180x180.png"
+monkey256x188 RCDATA "images/monkey256x188.png"
+monkey_splash RCDATA "images/monkey_splash.png"
 
 // Look and Feel des Betriebssystems
 #include "wx/msw/wx.rc"

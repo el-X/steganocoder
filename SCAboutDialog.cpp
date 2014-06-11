@@ -20,7 +20,7 @@ SCAboutDialog::SCAboutDialog(wxWindow* parent, wxWindowID id,
 void SCAboutDialog::create() {
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
-    appImage = new wxStaticBitmap(mainPanel, wxID_ANY, wxBITMAP_PNG(monkey180x180), wxDefaultPosition, wxDefaultSize, 0);
+    appImage = new wxStaticBitmap(mainPanel, wxID_ANY, wxBITMAP_PNG(monkey256x188), wxDefaultPosition, wxDefaultSize, 0);
     appImage->SetFocus();
     separator = new wxStaticLine(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
     developerHeadingLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_DEVELOPER_HEADING), wxDefaultPosition, wxDefaultSize, 0);

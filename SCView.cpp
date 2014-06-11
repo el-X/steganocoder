@@ -69,6 +69,13 @@ void SCView::doLayout() {
     this->Layout();
 }
 
+void SCView::showSplashScreen() {
+     new wxSplashScreen(wxBITMAP_PNG(monkey_splash),
+            wxSPLASH_CENTRE_ON_SCREEN|wxSPLASH_TIMEOUT,
+            6000, NULL, -1, wxDefaultPosition, wxDefaultSize,
+            wxSTAY_ON_TOP);
+}
+
 void SCView::createMenuBar() {
     // File
     wxMenu *menuFile = new wxMenu;    
