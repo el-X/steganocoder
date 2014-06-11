@@ -121,6 +121,9 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
             // Zeige maximale Länge der Nachricht.
             view->getMaxTxtLengthOutput()->SetValue(to_string(getMaxTextLength()));
+            view->getBitpatternOutput()->Clear();
+            this->setEncodingAllowed(true);
+            this->setDecodingAllowed(false);
         }
         // FIXME: Show scrollbars in the right way!
         wxSize size = view->GetSize();
@@ -167,19 +170,10 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
         model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
         model->encode(message.ToStdString());
-        std::cout << " pattern: \n " << std::endl;
-        wxString bitpattern = _(model->getModBitPattern());
-        // FIXME: Bitpatterncreation takes too much time
-        std::cout << bitpattern.ToStdString() << std::endl;
-        view->getBitpatternOutput()->SetValue(bitpattern);
-        std::cout << " set new image.. " << std::endl;
-        view->getUnmodStaticBitmap()->GetSize().GetHeight();
         newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
         newImage.SetData(model->getModCarrierBytes());
         view->getModStaticBitmap()->SetBitmap(newImage);
-        std::cout << " new image is set.. " << std::endl;
-        view->getSaveModImgBtn()->Enable();
-        view->getSaveModImgMenuItem()->Enable();
+        view->getBitpatternOutput()->SetValue(model->getModBitPattern());
     }
 }
 
@@ -189,8 +183,9 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
  * @param event created on the gui.
  */
 void SCPresenter::onDecode(wxCommandEvent& event) {
-    view->getSecretMsgInput()->SetValue(model->decode());
     view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
+    view->getMaxTxtLengthOutput()->SetValue("0");
+    view->getSecretMsgInput()->SetValue(model->decode());
     this->setEncodingAllowed(false);
 }
 
