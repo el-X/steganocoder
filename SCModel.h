@@ -21,10 +21,8 @@ public:
     std::string decode();
     unsigned char* getModCarrierBytes() const;
     void setModCarrierBytes(unsigned char* modBytes, size_t len);
-    void setModCarrierBytesLength(size_t size);
     unsigned char* getUnmodCarrierBytes() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len);
-    void setUnmodCarrierBytesLength(size_t size);
     bool checkForHeaderSignature() const;
 private:
     std::string charToBits(const unsigned char& c) const;
