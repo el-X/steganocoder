@@ -87,7 +87,7 @@ void SCPresenter::initImageHandlers() {
  * Anhand der event id wird unterschieden welche Aktion 
  * getätigt wurde (welche Komponente wurde getätigt).
  * 
- * @param event Kommando Event mit der ID
+ * @param event Kommando Event mit der ID.
  */
 void SCPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
@@ -115,27 +115,28 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
                 notationDialog.CentreOnParent();
                 notationDialog.ShowModal();
             }
+            view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
+            view->getSecretMsgInput()->Clear();
         } else {
             // Bild ohne versteckter Nachricht wurde geladen.
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
             // Zeige maximale Länge der Nachricht.
             view->getMaxTxtLengthOutput()->SetValue(to_string(getMaxTextLength()));
+            // Interaktive GUI Elemente aktualisieren.
             view->getBitpatternOutput()->Clear();
-            this->setEncodingAllowed(true);
+            this->setEncodingAllowed(!view->getSecretMsgInput()->GetValue().empty());
             this->setDecodingAllowed(false);
+            this->setSaveAllowed(false);
+            view->getModStaticBitmap()->SetBitmap(wxBitmap());
         }
-        // FIXME: Show scrollbars in the right way!
-        wxSize size = view->GetSize();
-        view->SetSize(size.GetWidth() + 1, size.GetHeight() + 1);
-        view->SetSize(size);
     }
 }
 
 /**
  * Öffnet ein FileDialog zur Speicherung des Bildes mit versteckter Nachricht.
  * 
- * @param event created on the gui.
+ * @param event Kommando Event mit der ID.
  */
 void SCPresenter::onSave(wxCommandEvent& event) {
     wxFileDialog dialog(view, _T("Save Image"), wxEmptyString, _T("top_secret.bmp"),
@@ -152,7 +153,7 @@ void SCPresenter::onSave(wxCommandEvent& event) {
 /**
  * Versteckt die gegebene Nachricht in dem gegebenem Bild.
  * 
- * @param event created on the gui.
+ * @param event Kommando Event mit der ID.
  */
 void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
@@ -168,19 +169,22 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
         // Das Bild ohne Nachricht holen.
         wxImage image = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
+        // Bilddaten an das Model übergeben und den Encodingvorgang starten.
         model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
         model->encode(message.ToStdString());
+        // Modifizierte Bilddaten holen und anzeigen.
         newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
         newImage.SetData(model->getModCarrierBytes());
         view->getModStaticBitmap()->SetBitmap(newImage);
         view->getBitpatternOutput()->SetValue(model->getModBitPattern());
+        this->setSaveAllowed(true);
     }
 }
 
 /**
  * Holt die Nachricht aus dem geladenen Bild.
  * 
- * @param event created on the gui.
+ * @param event Kommando Event mit der ID.
  */
 void SCPresenter::onDecode(wxCommandEvent& event) {
     view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
@@ -194,7 +198,7 @@ void SCPresenter::onDecode(wxCommandEvent& event) {
  * ersetzt diese durch gültige Zeichen. Zusätzlich wird die 
  * angezeigte Länge der einegegebener Nachricht aktualisiert.
  * 
- * @param event created on the gui.
+ * @param event Kommando Event mit der ID.
  */
 void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     // TODO statusbar nachricht (warnung) ausgeben wenn zu lange nachricht!
@@ -206,7 +210,7 @@ void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     if (reg.Compile(wxT("[ÄÖÜäöüß*]"))) {
         reg.Replace(&filtered, wxT("?")); // gemäß der Maske ersetzen
     }
-    // Aktualisiere das Eingabefeld nur wenn sich was ändert.
+    // Aktualisiere das Eingabefeld nur wenn die Nachricht gefiltert wurde.
     if (rawInput.compare(filtered) != 0) {
         msgInput->SetValue(filtered);
         msgInput->SetInsertionPointEnd();
@@ -216,24 +220,42 @@ void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     int size = msgInput->GetValue().size();
     msgLen->SetValue(std::to_string(size));
     // Deaktiviere bzw. aktiviere encode.
-    if (size = 0 && size < getMaxTextLength()) {
+    if (size = 0 || size > getMaxTextLength()) {
         this->setEncodingAllowed(false);
     } else {
         this->setEncodingAllowed(true);
     }
 }
 
+/**
+ * Wird beim Beenden des Programms ausgeführt.
+ * 
+ * @param event Kommando Event mit der ID.
+ */
 void SCPresenter::onExit(wxCommandEvent& event) {
     view->Close(true);
 }
 
+/**
+ * Zeigt ein Dialog mit Infos über das Programm, wenn die
+ * GUI-Interaktionselemte "Über" betätigt wurden.
+ * 
+ * @param event Kommando Event mit der ID.
+ */
 void SCPresenter::onAbout(wxCommandEvent& event) {
     view->getAboutDialog()->Centre();
     view->getAboutDialog()->ShowModal();
 }
 
+/**
+ * Ermittelt die maximal mögliche Länge der Nachricht mithilfe der Bilddaten
+ * und gibt diese zurück.
+ * 
+ * @return unsigned int Maximale Größe der Nachricht.
+ */
 int SCPresenter::getMaxTextLength() const {
     unsigned int maxTxtLength = 0;
+    // Maximal mögliche Länge anhand der Bilddaten ermitteln.
     if (!view->getUnmodStaticBitmap()->GetBitmap().IsNull()) {
         unsigned int height = view->getUnmodStaticBitmap()->GetBitmap().GetHeight();
         unsigned int width = view->getUnmodStaticBitmap()->GetBitmap().GetWidth();
@@ -242,16 +264,31 @@ int SCPresenter::getMaxTextLength() const {
     return maxTxtLength;
 }
 
+/**
+ * Aktiviert / deaktiviert GUI-Interaktionselemente für das Encoding.
+ * 
+ * @param allowed
+ */
 void SCPresenter::setEncodingAllowed(bool allowed) {
     view->getEncodeBtn()->Enable(allowed);
     view->getEncodeMenuItem()->Enable(allowed);
 }
 
+/**
+ * Aktiviert / deaktiviert GUI-Interaktionselemente für das Decoding.
+ * 
+ * @param allowed
+ */
 void SCPresenter::setDecodingAllowed(bool allowed) {
     view->getDecodeBtn()->Enable(allowed);
     view->getDecodeMenuItem()->Enable(allowed);
 }
 
+/**
+ * Aktiviert / deaktiviert GUI-Interaktionselemente für das Speichern.
+ * 
+ * @param allowed
+ */
 void SCPresenter::setSaveAllowed(bool allowed) {
     view->getSaveModImgBtn()->Enable(allowed);
     view->getSaveModImgMenuItem()->Enable(allowed);
