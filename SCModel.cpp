@@ -31,7 +31,6 @@ SCModel::~SCModel() {
  * @param msg In das Bild einzufügende Nachricht
  */
 void SCModel::encode(const string& msg) {
-    cout << "Encoding... " << endl;
     
     // Nachrichtenspezifischen Header und Nachricht in encoded_msg speichern
     string encoded_msg(createHeader(msg) + msg);
@@ -82,8 +81,6 @@ void SCModel::encode(const string& msg) {
             modCarrierBytes[i] = modCarrierBytes[i] | 1;
         }
     }
-    
-    cout << "...done" << endl;
 }
 
 /**
@@ -103,7 +100,6 @@ unsigned int SCModel::getHeaderSize() {
  * @return Versteckte Nachricht
  */
 string SCModel::decode() {
-    cout << "Decoding..." << endl;
     
     // Leeren String für das Speichern Bitrepräsentation der Länge der Nachricht
     string msg_binary_size("");
@@ -170,9 +166,6 @@ string SCModel::decode() {
         }
         
     }
-    
-    cout << "...done" << endl;
-    
     return decoded_msg;
 }
 
@@ -184,7 +177,6 @@ string SCModel::decode() {
  */
 bool SCModel::checkForHeaderSignature() const {
     
-    cout << "Checking for header signture..." << endl;
     // Prüfe Übereinstimmung mit einzelnen Signatur Zeichen 
     // mit den ersten Zeichen der Bitmap
     for (size_t i = 0; i < SGN.length(); i++) {
@@ -206,7 +198,6 @@ bool SCModel::checkForHeaderSignature() const {
             return false;
         }
     }
-    cout << "...done" << endl;
     return true;
 }
 /**
@@ -233,7 +224,6 @@ string SCModel::getModBitPattern() {
  * @return Den erstellten Header für die Nachricht
  */
 string SCModel::createHeader(const std::string& msg) {
-    cout << "Create Header..." << endl;
     
     //Header beginnt mit der Signatur
     string header(SGN);
@@ -248,9 +238,6 @@ string SCModel::createHeader(const std::string& msg) {
         //ASCII Wert der jeweiligen 8 Bits dem Header hinzufügen
         header += bitsToChar(strBits.substr(i * 8, 8));
     }
-    
-    cout << "...done" << endl;
-    
     return header;
 }
 

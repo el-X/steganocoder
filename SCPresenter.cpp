@@ -117,6 +117,8 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             }
             view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
             view->getSecretMsgInput()->Clear();
+            this->setEncodingAllowed(false);
+            view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
             // Bild ohne versteckter Nachricht wurde geladen.
             view->getUnmodStaticBitmap()->SetBitmap(image);
@@ -221,7 +223,8 @@ void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     int size = msgInput->GetValue().size();
     msgLen->SetValue(std::to_string(size));
     // Deaktiviere bzw. aktiviere encode.
-    if (size = 0 || size > getMaxTextLength()) {
+    if (view->getModStaticBitmap()->GetBitmap().IsFree() 
+            && (size = 0 || size > getMaxTextLength())) {
         this->setEncodingAllowed(false);
     } else {
         this->setEncodingAllowed(true);
