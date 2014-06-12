@@ -14,6 +14,7 @@ void SCView::create() {
     aboutDialog = new SCAboutDialog(this);
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     
+    this->SetTitle(_(TEXT_TITLE));
     this->SetIcon(wxICON(appicon));
     this->createMenuBar();
     this->createUpperLeftBox();
@@ -127,8 +128,8 @@ void SCView::createMenuBar() {
  * das unmodifizierte Bild seinen Platz findet.
  */
 void SCView::createUpperLeftBox() {
-    unmodImgScrolledWindow = new wxScrolledWindow(this->mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
-    unmodImgScrolledWindow->SetScrollRate(5, 5);
+    unmodImgScrolledWindow = new wxScrolledWindow(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
+    unmodImgScrolledWindow->SetScrollRate(1, 1);
     unmodStaticBitmap = new wxStaticBitmap(unmodImgScrolledWindow, wxID_ANY, wxBitmap(0, 0, -1), wxDefaultPosition, wxDefaultSize, 0);
     loadUnmodImgBtn = new wxButton(mainPanel, ID_LOAD_UNMOD_IMG, _(BTN_LOAD_IMG), wxDefaultPosition, wxDefaultSize, 0);
     loadUnmodImgBtn->SetDefault();
@@ -164,7 +165,7 @@ void SCView::createMiddleBox() {
  */
 void SCView::createUpperRightBox() {
     modImgScrolledWindow = new wxScrolledWindow(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
-    modImgScrolledWindow->SetScrollRate(5, 5);
+    modImgScrolledWindow->SetScrollRate(1, 1);
     modStaticBitmap = new wxStaticBitmap(modImgScrolledWindow, wxID_ANY, wxBitmap(0, 0, -1), wxDefaultPosition, wxDefaultSize, 0);
     loadModImgBtn = new wxButton(mainPanel, ID_LOAD_MOD_IMG, _(BTN_LOAD_IMG), wxDefaultPosition, wxDefaultSize, 0);
     modImgSeparator = new wxStaticLine(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
@@ -187,10 +188,8 @@ void SCView::layoutUpperLeftBox() {
     wxBoxSizer* unmodImgInfoSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* maxTxtLengthSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    unmodImgScrolledSizer->Add(unmodStaticBitmap, 1, wxALL | wxEXPAND, 5);
+    unmodImgScrolledSizer->Add(unmodStaticBitmap, 1, wxALIGN_CENTER | wxEXPAND, 0);
     unmodImgScrolledWindow->SetSizer(unmodImgScrolledSizer);
-    unmodImgScrolledWindow->Layout();
-    unmodImgScrolledSizer->Fit(unmodImgScrolledWindow);
 
     maxTxtLengthSizer->Add(maxTxtLengthLabel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
     maxTxtLengthSizer->Add(maxTxtLengthOutput, 1, wxALL | wxEXPAND, 5);
@@ -199,7 +198,7 @@ void SCView::layoutUpperLeftBox() {
     unmodImgInfoSizer->Add(unmodImgSeparator, 0, wxEXPAND | wxALL, 5);
     unmodImgInfoSizer->Add(maxTxtLengthSizer, 1, wxALIGN_CENTER_VERTICAL, 5);
 
-    unmodImgSizer->Add(unmodImgScrolledWindow, 1, wxEXPAND | wxALL, 5);
+    unmodImgSizer->Add(unmodImgScrolledWindow, 1, wxEXPAND | wxALL | wxALIGN_CENTER, 5);
     unmodImgSizer->Add(unmodImgInfoSizer, 0, wxEXPAND, 5);
 }
 
@@ -226,10 +225,8 @@ void SCView::layoutUpperRightBox() {
     wxBoxSizer* modImgScrolledSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* modImgBtnSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    modImgScrolledSizer->Add(modStaticBitmap, 1, wxALL | wxEXPAND, 5);
+    modImgScrolledSizer->Add(modStaticBitmap, 1, wxALIGN_CENTER | wxEXPAND, 0);
     modImgScrolledWindow->SetSizer(modImgScrolledSizer);
-    modImgScrolledWindow->Layout();
-    modImgScrolledSizer->Fit(modImgScrolledWindow);
 
     modImgBtnSizer->Add(loadModImgBtn, 1, wxALL | wxEXPAND, 5);
     modImgBtnSizer->Add(modImgSeparator, 0, wxEXPAND | wxALL, 5);

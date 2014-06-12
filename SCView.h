@@ -45,7 +45,7 @@ public:
         ID_DECODE = 5,
         ID_SECRET_MSG = 6
     };
-    SCView(const wxString& title = _("SteganoCoder"),
+    SCView(const wxString& title = wxEmptyString,
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxSize(800, 600))
     : wxFrame(NULL, wxID_ANY, title, pos, size) {};
@@ -131,6 +131,7 @@ protected:
     wxStaticBoxSizer* modImgSizer;
     wxStaticBoxSizer* bitPatternSizer;
     SCAboutDialog* aboutDialog;
+    const std::string TEXT_TITLE = "SteganoMonkey";
     const std::string MENU_FILE = "&File";
     const std::string MENU_EDIT = "&Edit";
     const std::string MENU_HELP = "&Help";

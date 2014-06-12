@@ -56,7 +56,7 @@ bool SCPresenter::OnInit() {
 
     model = new SCModel();
     this->init();
-    view->getStatusBar()->SetStatusText(_("Willkommen bei SteganoMonkey!"));
+    view->getStatusBar()->SetStatusText(_("Welcome to SteganoMonkey!"));
     return true;
 }
 
@@ -130,6 +130,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             this->setSaveAllowed(false);
             view->getModStaticBitmap()->SetBitmap(wxBitmap());
         }
+        view->Layout();
     }
 }
 
