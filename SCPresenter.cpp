@@ -56,7 +56,7 @@ bool SCPresenter::OnInit() {
 
     model = new SCModel();
     this->init();
-    view->getStatusBar()->SetStatusText(_("Welcome to SteganoMonkey!"));
+    view->setStatusBarText(_("Welcome to SteganoMonkey!"));
     return true;
 }
 
@@ -149,7 +149,7 @@ void SCPresenter::onSave(wxCommandEvent& event) {
     if (dialog.ShowModal() == wxID_OK) {
         wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
         modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->GetStatusBar()->SetStatusText("Bild mit versteckter Nachricht gespeichert unter: " + dialog.GetPath());
+        view->setStatusBarText("Image containing the secret message saved under: " + dialog.GetPath());
     }
 }
 

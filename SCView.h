@@ -8,16 +8,11 @@
 #ifndef SCVIEW_H
 #define	SCVIEW_H
 
-#include <wx/artprov.h>
-#include <wx/xrc/xmlres.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
 #include <wx/statbmp.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
 #include <wx/colour.h>
-#include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/sizer.h>
 #include <wx/scrolwin.h>
@@ -30,8 +25,9 @@
 #include <wx/statusbr.h>
 #include <wx/frame.h>
 #include <wx/menu.h>
-#include <wx/splash.h>
 
+#include "splashscreen.h"
+#include "SCStatusBar.h"
 #include "SCAboutDialog.h"
 
 class SCView : public wxFrame {
@@ -53,9 +49,8 @@ public:
     void create();
     void doLayout();
     void showSplashScreen();
-    wxStatusBar* getStatusBar() {
-        return this->statusBar;
-    }
+    void setStatusBarText(const wxString& text); 
+    void setStatusBarErrorText(const wxString& text); 
     wxStaticBitmap* getUnmodStaticBitmap() {
         return this->unmodStaticBitmap;
     }
@@ -103,7 +98,6 @@ public:
     }
     
 protected:
-    wxSplashScreen* splash;
     wxMenuItem *saveModImgMenuItem;
     wxMenuItem *encodeMenuItem;
     wxMenuItem *decodeMenuItem;
@@ -125,13 +119,16 @@ protected:
     wxStaticLine* modImgSeparator;
     wxButton* saveModImgBtn;
     wxTextCtrl* bitPatternOutput;
-    wxStatusBar* statusBar;
+    SCStatusBar* statusBar;
     wxStaticBoxSizer* unmodImgSizer;
     wxStaticBoxSizer* secretMsgSizer;
     wxStaticBoxSizer* modImgSizer;
     wxStaticBoxSizer* bitPatternSizer;
     SCAboutDialog* aboutDialog;
+    wxString oldStatusText;
+    wxString lastHelpShown;
     const std::string TEXT_TITLE = "SteganoMonkey";
+    const std::string TEXT_WELCOME = "Welcome to " + TEXT_TITLE + "!";
     const std::string MENU_FILE = "&File";
     const std::string MENU_EDIT = "&Edit";
     const std::string MENU_HELP = "&Help";
@@ -144,7 +141,7 @@ protected:
     const std::string MENUITEM_ENCODE_TEXT = "&Encode\tCtrl-E";
     const std::string MENUITEM_ENCODE_HELP = "Encode the unmodified image with the secret message";
     const std::string MENUITEM_DECODE_TEXT = "&Decode\tCtrl-D";
-    const std::string MENUITEM_DECODE_HELP = "Decode the modified image which contains a secret message";
+    const std::string MENUITEM_DECODE_HELP = "Decode the modified image containing a secret message";
     const std::string BTN_LOAD_IMG = "Load Image...";
     const std::string BTN_SAVE_IMG = "Save Image...";
     const std::string BTN_ENCODE = "Encode";
@@ -165,6 +162,7 @@ protected:
     void layoutLowerLeftBox();
     void layoutUpperRightBox();
     void layoutLowerRightBox();
+    virtual void DoGiveHelp(const wxString& help, bool show);
 };
 
 #endif	/* SCVIEW_H */

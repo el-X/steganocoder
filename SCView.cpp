@@ -13,7 +13,7 @@
 void SCView::create() {
     aboutDialog = new SCAboutDialog(this);
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    
+
     this->SetTitle(_(TEXT_TITLE));
     this->SetIcon(wxICON(appicon));
     this->createMenuBar();
@@ -23,7 +23,9 @@ void SCView::create() {
     this->createUpperRightBox();
     this->createLowerRightBox();
 
-    statusBar = this->CreateStatusBar(1, wxST_SIZEGRIP, wxID_ANY);
+    statusBar = new SCStatusBar(this, wxSTB_DEFAULT_STYLE);
+    this->setStatusBarText(_(TEXT_WELCOME));
+    this->SetStatusBar(statusBar);
 }
 
 /**
@@ -63,40 +65,49 @@ void SCView::doLayout() {
     mainPanel->SetSizer(mainSizer);
     mainPanel->Layout();
     mainSizer->Fit(mainPanel);
-    
+
     mainPanelSizer = new wxBoxSizer(wxHORIZONTAL);
     mainPanelSizer->Add(mainPanel, 1, wxEXPAND, 0);
     this->SetSizer(mainPanelSizer);
     this->Layout();
 }
 
+/**
+ * Funktion zum Anzeigen eines SplashScreens, die zum Start des Programms 
+ * aufgerufen wird.
+ */
 void SCView::showSplashScreen() {
-     new wxSplashScreen(wxBITMAP_PNG(monkey_splash),
-            wxSPLASH_CENTRE_ON_SCREEN|wxSPLASH_TIMEOUT,
-            6000, NULL, -1, wxDefaultPosition, wxDefaultSize,
-            wxSTAY_ON_TOP);
+    wxBitmap bitmap(wxBITMAP_PNG(monkey_splash));
+    // Code::Blocks SplashScreen zum Darstellen von transparenten Bitmaps
+    cbSplashScreen* splash = new cbSplashScreen(bitmap, -1, this, wxID_ANY);
+    ::wxMilliSleep(3000);
+    splash->Destroy();
 }
 
+/**
+ * Erzeugt eine MenuBar, die dem Benutzer Programm-Interaktionsmögichkeiten 
+ * bereitstellt.
+ */
 void SCView::createMenuBar() {
     // File
-    wxMenu *menuFile = new wxMenu;    
-    wxMenuItem *loadUnmodImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_UNMOD_IMG, 
+    wxMenu *menuFile = new wxMenu;
+    wxMenuItem *loadUnmodImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_UNMOD_IMG,
             _(MENUITEM_LOAD_UNMOD_IMG_TEXT), _(MENUITEM_LOAD_UNMOD_IMG_HELP));
     loadUnmodImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
     menuFile->Append(loadUnmodImgMenuItem);
     menuFile->AppendSeparator();
-    
-    wxMenuItem *loadModImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_MOD_IMG, 
-                _(MENUITEM_LOAD_MOD_IMG_TEXT), _(MENUITEM_LOAD_MOD_IMG_HELP));
+
+    wxMenuItem *loadModImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_MOD_IMG,
+            _(MENUITEM_LOAD_MOD_IMG_TEXT), _(MENUITEM_LOAD_MOD_IMG_HELP));
     loadModImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
     menuFile->Append(loadModImgMenuItem);
-    
-    saveModImgMenuItem = new wxMenuItem(menuFile, ID_SAVE_MOD_IMG, 
+
+    saveModImgMenuItem = new wxMenuItem(menuFile, ID_SAVE_MOD_IMG,
             _(MENUITEM_SAVE_MOD_IMG_TEXT), _(MENUITEM_SAVE_MOD_IMG_HELP));
     saveModImgMenuItem->SetBitmap(wxBITMAP_PNG(save16x16));
     menuFile->Append(saveModImgMenuItem);
     menuFile->AppendSeparator();
-    
+
     wxMenuItem *exitMenuItem = new wxMenuItem(menuFile, wxID_EXIT);
     exitMenuItem->SetBitmap(wxBITMAP_PNG(exit16x16));
     menuFile->Append(exitMenuItem);
@@ -145,7 +156,7 @@ void SCView::createUpperLeftBox() {
  */
 void SCView::createLowerLeftBox() {
     secretMsgInput = new wxTextCtrl(mainPanel, ID_SECRET_MSG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_TXT_LENGTH), wxDefaultPosition, wxSize( -1,-1 ), 0);
+    txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_TXT_LENGTH), wxDefaultPosition, wxSize(-1, -1), 0);
     txtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, -1), wxTE_READONLY);
     txtLengthLabel->Wrap(-1); // kein Wrapping
 }
@@ -242,5 +253,71 @@ void SCView::layoutUpperRightBox() {
 void SCView::layoutLowerRightBox() {
     bitPatternSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_BIT_PATERN)), wxVERTICAL);
     bitPatternSizer->Add(bitPatternOutput, 1, wxALL | wxEXPAND, 5);
+}
+
+/**
+ * Dient zum Setzen eines ganz gewönlichen Textes in der StatusBar.
+ * @param text der darzustellende StatusBar-Text
+ */
+void SCView::setStatusBarText(const wxString& text) {
+    statusBar->setStatusStyle(SCStatusBar::STATUS_NORMAL);
+    statusBar->SetStatusText(text);
+}
+
+/**
+ * Erzeugt eine Fehlerausgabe mit einer rot hinterlegten StatusBar und stellt
+ * somit eine alternative Herangehensweise zu den alt hergebrachten 
+ * Fehlerdialogen dar.
+ * @param text der darzustellende Fehlertext
+ */
+void SCView::setStatusBarErrorText(const wxString& text) {
+    statusBar->setStatusStyle(SCStatusBar::STATUS_ERROR);
+    statusBar->SetStatusText(text);
+}
+
+/**
+ * Überschriebene Methode von wxFrame. Dient zur Darstellung von Hilfetexten
+ * in der StatusBar, die beim Hovern über ein MenuItem ausgelöst werden. 
+ * Hierbei muss sichergestellt werden, dass Text, der vorher explizit auf der
+ * StatusBar gesetzt wurde, nach Beendigung des Hovervorgangs auch wieder
+ * zurückgesetzt wird.
+ * @param help der anzuzeigende Hilfetext
+ * @param show gibt an, ob ein Menü geöffnet wurde
+ */
+void SCView::DoGiveHelp(const wxString& help, bool show) {
+    // nur anzeigen, wenn gerade keine Fehlermeldung auf der StatusBar ausgegeben wird
+    if (statusBar->getStatusStyle() != SCStatusBar::STATUS_ERROR) {
+        wxString text;  // der zu setzende StatusText
+        if (show) {  // ein Menü wurde geöffnet
+            if (oldStatusText.empty()) { 
+                // den alten Wert abspeichern, wenn noch nicht gesetzt
+                oldStatusText = statusBar->GetStatusText();
+                if (oldStatusText.empty()) {  
+                    // wenn der momentane StatusText leer ist, schließen wir
+                    // diesen mit einem Nullzeichen ab, sodass 
+                    // "oldStatusText.empty() = false" wird
+                    oldStatusText += _('\0');
+                }
+            }
+            this->lastHelpShown = text = help;
+        } else {    // ein Menü wurde geschlossen
+            wxString lastHelpShown;
+            // den zuletzt angezeigten Hilfetext löschen, den Wert jedoch noch 
+            // merken
+            lastHelpShown.swap(this->lastHelpShown);
+
+            // den alten Text löschen und den Wert merken, um ihn weiter unten 
+            // setzen zu können
+            text.swap(oldStatusText);
+
+            // wenn der StatusText nicht mit dem zuletzt angezeigten Hilfetext
+            // übereinstimmt, bedeutet es, dass dieser währenddessen explizit
+            // gesetzt wurde und somit nicht überschrieben werden sollte
+            if (statusBar->GetStatusText() != lastHelpShown) {
+                return;
+            }
+        }
+        statusBar->SetStatusText(text);
+    }
 }
 
