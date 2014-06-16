@@ -24,6 +24,7 @@ public:
     unsigned char* getUnmodCarrierBytes() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len);
     bool checkForHeaderSignature() const;
+    std::string replaceNonASCII(std::string& str);
 private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;

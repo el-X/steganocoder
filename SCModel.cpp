@@ -23,6 +23,10 @@ SCModel::SCModel() {
 SCModel::~SCModel() {
 }
 
+string SCModel::replaceNonASCII(string& str) {
+     return regex_replace(str, regex("[^\u0000-\u007F]"), string(""));
+}
+
 /**
  * Modifiziert die Bytes für das enkodierte Bild so,
  * dass in den letzten Bits eines jeden Bytes des Bildes
