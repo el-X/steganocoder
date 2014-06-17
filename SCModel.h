@@ -12,7 +12,7 @@
 
 class SCModel {
 public:
-    
+
     SCModel();
     virtual ~SCModel();
     unsigned int getHeaderSize();
@@ -26,16 +26,15 @@ public:
     size_t getUnmodCarrierBytesLength() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len);
     bool checkForHeaderSignature() const;
-    std::string replaceNonASCII(std::string& str);
 private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;
     std::string createHeader(const std::string& msg);
     const std::string SGN = "SGN";
     unsigned char* modCarrierBytes;
-    size_t modCarrierBytesLength;
+    size_t modCarrierBytesLength = 0;
     unsigned char* unmodCarrierBytes;
-    size_t unmodCarrierBytesLength;
+    size_t unmodCarrierBytesLength = 0;
 };
 
 #endif	/* SCMODEL_H */

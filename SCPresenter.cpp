@@ -45,7 +45,7 @@ wxEND_EVENT_TABLE()
  */
 bool SCPresenter::OnInit() {
     this->initImageHandlers();
-    
+
     view = new SCView();
     view->showSplashScreen();
     view->SetMinSize(wxSize(800, 600));
@@ -56,7 +56,7 @@ bool SCPresenter::OnInit() {
 
     model = new SCModel();
     this->init();
-    view->setStatusBarText(_("Welcome to SteganoMonkey!"));
+    view->setStatusBarText(welcomeMsg);
     return true;
 }
 
@@ -69,6 +69,7 @@ void SCPresenter::init() {
     this->setDecodingAllowed(false);
     view->getTxtLengthOutput()->SetValue(to_string(0));
     view->getMaxTxtLengthOutput()->SetValue(to_string(0));
+    view->getSecretMsgInput()->SetEditable(false);
 }
 
 /**
@@ -107,17 +108,20 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             // Prüfen ob das Bild eine verstekcte Nachricht enthält.
             if (model->checkForHeaderSignature()) {
                 this->setDecodingAllowed(true);
+                view->setStatusBarText("Ready to decode!");
             } else {
                 this->setDecodingAllowed(false);
                 wxMessageDialog notationDialog(NULL,
-                        wxT("Geladenes Bild enthält keine versteckte Nachricht!"),
+                        wxT("Loaded picture has no hidden message!"),
                         wxT("Info"), wxOK | wxICON_WARNING);
                 notationDialog.CentreOnParent();
                 notationDialog.ShowModal();
             }
             view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
             view->getSecretMsgInput()->Clear();
+            view->getSecretMsgInput()->SetEditable(false);
             this->setEncodingAllowed(false);
+            model->setUnmodCarrierBytes(emptyCharArray, 0);
             view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
             // Bild ohne versteckter Nachricht wurde geladen.
@@ -127,10 +131,16 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
             view->getMaxTxtLengthOutput()->SetValue(to_string(getMaxTextLength()));
             // Interaktive GUI Elemente aktualisieren.
             view->getBitpatternOutput()->Clear();
-            this->setEncodingAllowed(!view->getSecretMsgInput()->GetValue().empty());
+            view->getSecretMsgInput()->SetEditable(true);
             this->setDecodingAllowed(false);
             this->setSaveAllowed(false);
+            model->setModCarrierBytes(emptyCharArray, 0);
             view->getModStaticBitmap()->SetBitmap(wxBitmap());
+            bool isSecMsgEmpty = view->getSecretMsgInput()->GetValue().empty();
+            this->setEncodingAllowed(!isSecMsgEmpty);
+            if (!isSecMsgEmpty) {
+                view->setStatusBarText("Ready to encode!");
+            }
         }
         view->Layout();
     }
@@ -161,27 +171,22 @@ void SCPresenter::onSave(wxCommandEvent& event) {
 void SCPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
     wxImage newImage;
-    if (wxAtoi(message) > getMaxTextLength()) {
-        // TODO raus, da es in die status bar geschrieben werden soll
-        wxMessageDialog notationDialog(NULL,
-                wxT("Tut uns leid, das Bild ist zu klein für die Nachricht!"),
-                wxT("WARNING!"), wxOK | wxICON_WARNING);
-        notationDialog.CentreOnParent();
-        notationDialog.ShowModal();
-    } else {
-        // Das Bild ohne Nachricht holen.
-        wxImage image = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
-        size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
-        // Bilddaten an das Model übergeben und den Encodingvorgang starten.
-        model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
-        model->encode(message.ToStdString());
-        // Modifizierte Bilddaten holen und anzeigen.
-        newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
-        newImage.SetData(model->getModCarrierBytes());
-        view->getModStaticBitmap()->SetBitmap(newImage);
-        view->getBitpatternOutput()->SetValue(model->getModBitPattern());
-        this->setSaveAllowed(true);
-    }
+
+    // Das Bild ohne Nachricht holen.
+    wxImage image = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
+    size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
+    // Bilddaten an das Model übergeben und den Encodingvorgang starten.
+    model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
+    model->encode(message.ToStdString());
+
+    // Modifizierte Bilddaten holen und anzeigen.
+    newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
+    newImage.SetData(model->getModCarrierBytes());
+    view->getModStaticBitmap()->SetBitmap(newImage);
+    view->getBitpatternOutput()->SetValue(model->getModBitPattern());
+    this->setSaveAllowed(true);
+    view->Layout();
+
 }
 
 /**
@@ -204,13 +209,12 @@ void SCPresenter::onDecode(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
-    // TODO statusbar nachricht (warnung) ausgeben wenn zu lange nachricht!
     // Ersetze alle nicht ASCII Zeichen.
     wxTextCtrl* msgInput = view->getSecretMsgInput();
     wxString rawInput = msgInput->GetValue();
     wxString filtered = rawInput;
     wxRegEx reg;
-    if (reg.Compile(wxT("[ÄÖÜäöüß*]"))) {
+    if (reg.Compile(wxT("[^\u0000-\u007F]"))) {
         reg.Replace(&filtered, wxT("?")); // gemäß der Maske ersetzen
     }
     // Aktualisiere das Eingabefeld nur wenn die Nachricht gefiltert wurde.
@@ -222,13 +226,21 @@ void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
     wxTextCtrl* msgLen = view->getTxtLengthOutput();
     int size = msgInput->GetValue().size();
     msgLen->SetValue(std::to_string(size));
-    // Deaktiviere bzw. aktiviere encode.
-    if (view->getModStaticBitmap()->GetBitmap().IsFree() 
-            && (size = 0 || size > getMaxTextLength())) {
+    // Deaktiviere bzw. aktiviere encode und aktualisiere die Statusleiste.
+    int maxLength = getMaxTextLength();
+    bool unmodBmpSet = isUnmodBmpSet();
+    if (!unmodBmpSet || size == 0 || size > maxLength) {
         this->setEncodingAllowed(false);
+        if (unmodBmpSet && size > maxLength) {
+            view->setStatusBarErrorText("Your message is too long for the given picture!");
+        } else if (!isModBmpSet()) {
+            view->setStatusBarText(welcomeMsg);
+        }
     } else {
         this->setEncodingAllowed(true);
+        view->setStatusBarText("Ready to encode!");
     }
+    view->Layout();
 }
 
 /**
@@ -298,4 +310,20 @@ void SCPresenter::setSaveAllowed(bool allowed) {
     view->getSaveModImgMenuItem()->Enable(allowed);
 }
 
+/**
+ * Liefert TRUE zurück, wenn ein Bild fürs encode geladen ist.
+ * 
+ * @return bool
+ */
+bool SCPresenter::isUnmodBmpSet() {
+    return (model->getUnmodCarrierBytesLength() > 0);
+}
 
+/**
+ * Liefert TRUE zurück, wenn ein Bild fürs decode geladen ist.
+ * 
+ * @return bool
+ */
+bool SCPresenter::isModBmpSet() {
+    return (model->getModCarrierBytesLength() > 0);
+}

@@ -33,6 +33,10 @@ private:
     void setEncodingAllowed(bool allowed);
     void setDecodingAllowed(bool allowed);
     void setSaveAllowed(bool allowed);
+    bool isUnmodBmpSet();
+    bool isModBmpSet();
+    const wxString welcomeMsg = _("Welcome to SteganoMonkey!");
+    unsigned char* emptyCharArray = new unsigned char[0];
     wxDECLARE_EVENT_TABLE();
 };
 
