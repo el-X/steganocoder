@@ -1,5 +1,5 @@
 /* 
- * File:   SCAboutDialog.cpp
+ * File:   SMAboutDialog.cpp
  * Author: Alexander Keller, Robert Heimsoth, Thomas Matern
  *
  * HS BREMEN, SS2014, TI6.2

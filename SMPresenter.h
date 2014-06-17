@@ -1,5 +1,5 @@
 /* 
- * File:   SCPresenter.h
+ * File:   SMPresenter.h
  * Author: Alexander Keller, Robert Heimsoth, Thomas Matern
  *
  * HS BREMEN, SS2014, TI6.2
