@@ -87,6 +87,7 @@ void SCStatusBar::applyStatusStyle() {
     statusText->SetForegroundColour(foregroundColour);
     this->SetWindowStyle(border);
     statusText->SetWindowStyle(alignment);
+    this->Refresh();
 }
 
 /**
