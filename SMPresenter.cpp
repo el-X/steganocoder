@@ -14,39 +14,39 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 #include <wx/regex.h>
-#include "SCPresenter.h"
+#include "SMPresenter.h"
 #include <iostream>
 #include <string>
 
 using namespace std;
 
-IMPLEMENT_APP(SCPresenter)
+IMPLEMENT_APP(SMPresenter)
 
 // Mapping für die Events vornehmen
-wxBEGIN_EVENT_TABLE(SCPresenter, wxApp)
-    EVT_MENU(SCView::ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
-    EVT_BUTTON(SCView::ID_LOAD_UNMOD_IMG, SCPresenter::onLoad)
-    EVT_MENU(SCView::ID_LOAD_MOD_IMG, SCPresenter::onLoad)
-    EVT_BUTTON(SCView::ID_LOAD_MOD_IMG, SCPresenter::onLoad)
-    EVT_MENU(SCView::ID_SAVE_MOD_IMG, SCPresenter::onSave)
-    EVT_BUTTON(SCView::ID_SAVE_MOD_IMG, SCPresenter::onSave)
-    EVT_MENU(SCView::ID_ENCODE, SCPresenter::onEncode)
-    EVT_BUTTON(SCView::ID_ENCODE, SCPresenter::onEncode)
-    EVT_MENU(SCView::ID_DECODE, SCPresenter::onDecode)
-    EVT_BUTTON(SCView::ID_DECODE, SCPresenter::onDecode)
-    EVT_TEXT(SCView::ID_SECRET_MSG, SCPresenter::onSecretMessageChange)
-    EVT_MENU(wxID_EXIT, SCPresenter::onExit)
-    EVT_MENU(wxID_ABOUT, SCPresenter::onAbout)
+wxBEGIN_EVENT_TABLE(SMPresenter, wxApp)
+    EVT_MENU(SMView::ID_LOAD_UNMOD_IMG, SMPresenter::onLoad)
+    EVT_BUTTON(SMView::ID_LOAD_UNMOD_IMG, SMPresenter::onLoad)
+    EVT_MENU(SMView::ID_LOAD_MOD_IMG, SMPresenter::onLoad)
+    EVT_BUTTON(SMView::ID_LOAD_MOD_IMG, SMPresenter::onLoad)
+    EVT_MENU(SMView::ID_SAVE_MOD_IMG, SMPresenter::onSave)
+    EVT_BUTTON(SMView::ID_SAVE_MOD_IMG, SMPresenter::onSave)
+    EVT_MENU(SMView::ID_ENCODE, SMPresenter::onEncode)
+    EVT_BUTTON(SMView::ID_ENCODE, SMPresenter::onEncode)
+    EVT_MENU(SMView::ID_DECODE, SMPresenter::onDecode)
+    EVT_BUTTON(SMView::ID_DECODE, SMPresenter::onDecode)
+    EVT_TEXT(SMView::ID_SECRET_MSG, SMPresenter::onSecretMessageChange)
+    EVT_MENU(wxID_EXIT, SMPresenter::onExit)
+    EVT_MENU(wxID_ABOUT, SMPresenter::onAbout)
 wxEND_EVENT_TABLE()
 
 
 /**
  * Die main-Funktion des Programms.
  */
-bool SCPresenter::OnInit() {
+bool SMPresenter::OnInit() {
     this->initImageHandlers();
 
-    view = new SCView();
+    view = new SMView();
     view->showSplashScreen();
     view->SetMinSize(wxSize(800, 600));
     view->create();
@@ -54,7 +54,7 @@ bool SCPresenter::OnInit() {
     view->Centre();
     view->Show(true);
 
-    model = new SCModel();
+    model = new SMModel();
     this->init();
     view->setStatusBarText(welcomeMsg);
     return true;
@@ -63,7 +63,7 @@ bool SCPresenter::OnInit() {
 /**
  * Definiert den Startzustand des Programms.
  */
-void SCPresenter::init() {
+void SMPresenter::init() {
     this->setSaveAllowed(false);
     this->setEncodingAllowed(false);
     this->setDecodingAllowed(false);
@@ -75,7 +75,7 @@ void SCPresenter::init() {
 /**
  * Initialisiert die Handler für die genutzten Bildformate.
  */
-void SCPresenter::initImageHandlers() {
+void SMPresenter::initImageHandlers() {
     wxImage::AddHandler(new wxBMPHandler);
     wxImage::AddHandler(new wxPNGHandler);
     wxImage::AddHandler(new wxJPEGHandler);
@@ -90,7 +90,7 @@ void SCPresenter::initImageHandlers() {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onLoad(wxCommandEvent& event) {
+void SMPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
             _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif"));
     openDialog.SetDirectory(wxGetHomeDir());
@@ -100,7 +100,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
         wxImage image = openDialog.GetPath();
         // Anzahl der Bytes = Hoehe x Breite x RGB
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
-        if (event.GetId() == SCView::ID_LOAD_MOD_IMG) {
+        if (event.GetId() == SMView::ID_LOAD_MOD_IMG) {
             // Es wird versucht ein Bild mit versteckter Nachricht zu laden
             view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData(), (size_t) imageBytesCount);
@@ -151,7 +151,7 @@ void SCPresenter::onLoad(wxCommandEvent& event) {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onSave(wxCommandEvent& event) {
+void SMPresenter::onSave(wxCommandEvent& event) {
     wxFileDialog dialog(view, _T("Save Image"), wxEmptyString, _T("top_secret.bmp"),
             _T("Bitmap (*.bmp)|*.bmp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
@@ -168,7 +168,7 @@ void SCPresenter::onSave(wxCommandEvent& event) {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onEncode(wxCommandEvent& event) {
+void SMPresenter::onEncode(wxCommandEvent& event) {
     wxString message = view->getSecretMsgInput()->GetValue();
     wxImage newImage;
 
@@ -194,7 +194,7 @@ void SCPresenter::onEncode(wxCommandEvent& event) {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onDecode(wxCommandEvent& event) {
+void SMPresenter::onDecode(wxCommandEvent& event) {
     view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
     view->getMaxTxtLengthOutput()->SetValue("0");
     view->getSecretMsgInput()->SetValue(model->decode());
@@ -208,7 +208,7 @@ void SCPresenter::onDecode(wxCommandEvent& event) {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
+void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
     // Ersetze alle nicht ASCII Zeichen.
     wxTextCtrl* msgInput = view->getSecretMsgInput();
     wxString rawInput = msgInput->GetValue();
@@ -248,7 +248,7 @@ void SCPresenter::onSecretMessageChange(wxCommandEvent& event) {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onExit(wxCommandEvent& event) {
+void SMPresenter::onExit(wxCommandEvent& event) {
     view->Close(true);
 }
 
@@ -258,7 +258,7 @@ void SCPresenter::onExit(wxCommandEvent& event) {
  * 
  * @param event Kommando Event mit der ID.
  */
-void SCPresenter::onAbout(wxCommandEvent& event) {
+void SMPresenter::onAbout(wxCommandEvent& event) {
     view->getAboutDialog()->Centre();
     view->getAboutDialog()->ShowModal();
 }
@@ -269,7 +269,7 @@ void SCPresenter::onAbout(wxCommandEvent& event) {
  * 
  * @return unsigned int Maximale Größe der Nachricht.
  */
-int SCPresenter::getMaxTextLength() const {
+int SMPresenter::getMaxTextLength() const {
     unsigned int maxTxtLength = 0;
     // Maximal mögliche Länge anhand der Bilddaten ermitteln.
     if (!view->getUnmodStaticBitmap()->GetBitmap().IsNull()) {
@@ -285,7 +285,7 @@ int SCPresenter::getMaxTextLength() const {
  * 
  * @param allowed
  */
-void SCPresenter::setEncodingAllowed(bool allowed) {
+void SMPresenter::setEncodingAllowed(bool allowed) {
     view->getEncodeBtn()->Enable(allowed);
     view->getEncodeMenuItem()->Enable(allowed);
 }
@@ -295,7 +295,7 @@ void SCPresenter::setEncodingAllowed(bool allowed) {
  * 
  * @param allowed
  */
-void SCPresenter::setDecodingAllowed(bool allowed) {
+void SMPresenter::setDecodingAllowed(bool allowed) {
     view->getDecodeBtn()->Enable(allowed);
     view->getDecodeMenuItem()->Enable(allowed);
 }
@@ -305,7 +305,7 @@ void SCPresenter::setDecodingAllowed(bool allowed) {
  * 
  * @param allowed
  */
-void SCPresenter::setSaveAllowed(bool allowed) {
+void SMPresenter::setSaveAllowed(bool allowed) {
     view->getSaveModImgBtn()->Enable(allowed);
     view->getSaveModImgMenuItem()->Enable(allowed);
 }
@@ -315,7 +315,7 @@ void SCPresenter::setSaveAllowed(bool allowed) {
  * 
  * @return bool
  */
-bool SCPresenter::isUnmodBmpSet() {
+bool SMPresenter::isUnmodBmpSet() {
     return (model->getUnmodCarrierBytesLength() > 0);
 }
 
@@ -324,6 +324,6 @@ bool SCPresenter::isUnmodBmpSet() {
  * 
  * @return bool
  */
-bool SCPresenter::isModBmpSet() {
+bool SMPresenter::isModBmpSet() {
     return (model->getModCarrierBytesLength() > 0);
 }

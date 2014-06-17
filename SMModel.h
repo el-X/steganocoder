@@ -5,16 +5,16 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#ifndef SCMODEL_H
-#define	SCMODEL_H
+#ifndef SMMODEL_H
+#define	SMMODEL_H
 
 #include <string>
 
-class SCModel {
+class SMModel {
 public:
 
-    SCModel();
-    virtual ~SCModel();
+    SMModel();
+    virtual ~SMModel();
     unsigned int getHeaderSize();
     std::string getModBitPattern();
     void encode(const std::string& msg);
@@ -37,5 +37,5 @@ private:
     size_t unmodCarrierBytesLength = 0;
 };
 
-#endif	/* SCMODEL_H */
+#endif	/* SMMODEL_H */
 

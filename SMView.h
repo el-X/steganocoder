@@ -5,8 +5,8 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#ifndef SCVIEW_H
-#define	SCVIEW_H
+#ifndef SMVIEW_H
+#define	SMVIEW_H
 
 #include <wx/bitmap.h>
 #include <wx/image.h>
@@ -27,10 +27,10 @@
 #include <wx/menu.h>
 
 #include "splashscreen.h"
-#include "SCStatusBar.h"
-#include "SCAboutDialog.h"
+#include "SMStatusBar.h"
+#include "SMAboutDialog.h"
 
-class SCView : public wxFrame {
+class SMView : public wxFrame {
 public:
     // Die IDs für die Events
     enum EVENT_ID {
@@ -41,11 +41,11 @@ public:
         ID_DECODE = 5,
         ID_SECRET_MSG = 6
     };
-    SCView(const wxString& title = wxEmptyString,
+    SMView(const wxString& title = wxEmptyString,
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxSize(800, 600))
     : wxFrame(NULL, wxID_ANY, title, pos, size) {};
-    virtual ~SCView() {};
+    virtual ~SMView() {};
     void create();
     void doLayout();
     void showSplashScreen();
@@ -93,7 +93,7 @@ public:
     wxMenuItem* getDecodeMenuItem() {
         return this->decodeMenuItem;
     }
-    SCAboutDialog* getAboutDialog() {
+    SMAboutDialog* getAboutDialog() {
         return this->aboutDialog;
     }
     
@@ -119,12 +119,12 @@ protected:
     wxStaticLine* modImgSeparator;
     wxButton* saveModImgBtn;
     wxTextCtrl* bitPatternOutput;
-    SCStatusBar* statusBar;
+    SMStatusBar* statusBar;
     wxStaticBoxSizer* unmodImgSizer;
     wxStaticBoxSizer* secretMsgSizer;
     wxStaticBoxSizer* modImgSizer;
     wxStaticBoxSizer* bitPatternSizer;
-    SCAboutDialog* aboutDialog;
+    SMAboutDialog* aboutDialog;
     wxString oldStatusText;
     wxString lastHelpShown;
     const std::string TEXT_TITLE = "SteganoMonkey";
@@ -165,5 +165,5 @@ protected:
     virtual void DoGiveHelp(const wxString& help, bool show);
 };
 
-#endif	/* SCVIEW_H */
+#endif	/* SMVIEW_H */
 

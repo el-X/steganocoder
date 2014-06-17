@@ -5,7 +5,7 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#include "SCModel.h"
+#include "SMModel.h"
 #include <assert.h>
 #include <string>
 #include <bitset>
@@ -17,10 +17,10 @@
 
 using namespace std;
 
-SCModel::SCModel() {
+SMModel::SMModel() {
 }
 
-SCModel::~SCModel() {
+SMModel::~SMModel() {
 }
 
 /**
@@ -30,7 +30,7 @@ SCModel::~SCModel() {
  * 
  * @param msg In das Bild einzufügende Nachricht
  */
-void SCModel::encode(const string& msg) {
+void SMModel::encode(const string& msg) {
 
     // Nachrichtenspezifischen Header und Nachricht in encoded_msg speichern
     string encoded_msg(createHeader(msg) + msg);
@@ -88,7 +88,7 @@ void SCModel::encode(const string& msg) {
  * 
  * @return Länge des Headers
  */
-unsigned int SCModel::getHeaderSize() {
+unsigned int SMModel::getHeaderSize() {
     // Headerlänge setzt sich zusammen aus der Signaturlänge
     // und 4 Bytes für das Speichern der Nachrichtenlänge
     return (SGN.size() + 4);
@@ -99,7 +99,7 @@ unsigned int SCModel::getHeaderSize() {
  * vorhanden ist.
  * @return Versteckte Nachricht
  */
-string SCModel::decode() {
+string SMModel::decode() {
 
     // Leeren String für das Speichern Bitrepräsentation der Länge der Nachricht
     string msg_binary_size("");
@@ -175,7 +175,7 @@ string SCModel::decode() {
  * 
  * @return true, wenn Signatur gefunden, false wenn nicht
  */
-bool SCModel::checkForHeaderSignature() const {
+bool SMModel::checkForHeaderSignature() const {
 
     // Prüfe Übereinstimmung mit einzelnen Signatur Zeichen 
     // mit den ersten Zeichen der Bitmap
@@ -206,7 +206,7 @@ bool SCModel::checkForHeaderSignature() const {
  * 
  * @return Bitmuster des modifizierten Bildes
  */
-string SCModel::getModBitPattern() {
+string SMModel::getModBitPattern() {
     string result("");
     // Erstelle für jedes Byte des Bildes die Bitrepräsenation und füge
     // diese dem Ergebnisstring hinzu.
@@ -224,7 +224,7 @@ string SCModel::getModBitPattern() {
  * @param msg Nachricht für den ein Header erstellt werden soll
  * @return Den erstellten Header für die Nachricht
  */
-string SCModel::createHeader(const std::string& msg) {
+string SMModel::createHeader(const std::string& msg) {
 
     //Header beginnt mit der Signatur
     string header(SGN);
@@ -249,7 +249,7 @@ string SCModel::createHeader(const std::string& msg) {
  * @param c Zeichen, dessen Bitrepräsentation erstellt werden soll
  * @return Bitrepräsentation des ASCII Wertes
  */
-string SCModel::charToBits(const unsigned char& c) const {
+string SMModel::charToBits(const unsigned char& c) const {
     string bits("");
     for (int i = 7; i >= 0; i--) {
         //Einzelne Bits des Zeichens von rechts in die Bitrepräsentation speichern
@@ -266,7 +266,7 @@ string SCModel::charToBits(const unsigned char& c) const {
  * @param bits Die Bitrepräsentation des Zeichens
  * @return Das Zeichen, welches der Bitrepräsentation entspricht
  */
-unsigned char SCModel::bitsToChar(const std::string& bits) const {
+unsigned char SMModel::bitsToChar(const std::string& bits) const {
     //Prüfen, ob das Bitmuster 8 Bits lang ist (1 Byte = 1 Zeichen)
     assert(bits.size() == 8);
 
@@ -285,7 +285,7 @@ unsigned char SCModel::bitsToChar(const std::string& bits) const {
  * 
  * @return Bytemuster des modiziferten Bildes
  */
-unsigned char* SCModel::getModCarrierBytes() const {
+unsigned char* SMModel::getModCarrierBytes() const {
     return modCarrierBytes;
 };
 
@@ -294,7 +294,7 @@ unsigned char* SCModel::getModCarrierBytes() const {
  * 
  * @return Länge des Bytemusters des modiziferten Bildes
  */
-size_t SCModel::getModCarrierBytesLength() const {
+size_t SMModel::getModCarrierBytesLength() const {
     return modCarrierBytesLength;
 };
 
@@ -304,7 +304,7 @@ size_t SCModel::getModCarrierBytesLength() const {
  * @param modBytes Bytemuster, welches auf das Bytemuster des modifizierten Bildes gesetzt wird
  * @param len Länge des Bytemusters
  */
-void SCModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
+void SMModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
 
     // Reservieren von neuem Speicherplatz in der Größe der übergebenen Länge
     modCarrierBytes = new unsigned char[len];
@@ -322,7 +322,7 @@ void SCModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
  * 
  * @return Bytemuster des unmodiziferten Bildes
  */
-unsigned char* SCModel::getUnmodCarrierBytes() const {
+unsigned char* SMModel::getUnmodCarrierBytes() const {
     return unmodCarrierBytes;
 };
 
@@ -331,7 +331,7 @@ unsigned char* SCModel::getUnmodCarrierBytes() const {
  * 
  * @return Länge des Bytemusters des unmodiziferten Bildes
  */
-size_t SCModel::getUnmodCarrierBytesLength() const {
+size_t SMModel::getUnmodCarrierBytesLength() const {
     return unmodCarrierBytesLength;
 };
 
@@ -341,7 +341,7 @@ size_t SCModel::getUnmodCarrierBytesLength() const {
  * @param modBytes Bytemuster, welches auf das Bytemuster des unmodifizierten Bildes gesetzt wird
  * @param len Länge des Bytemusters
  */
-void SCModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
+void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
 
     // Reservieren von neuem Speicherplatz in der Größe der übergebenen Länge
     unmodCarrierBytes = new unsigned char[len];

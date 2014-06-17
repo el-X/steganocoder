@@ -5,12 +5,12 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#include "SCStatusBar.h"
+#include "SMStatusBar.h"
 #include <iostream>
 
 // Mapping für die StatusBar-Events vornehmen
-BEGIN_EVENT_TABLE(SCStatusBar, wxStatusBar)
-    EVT_SIZE(SCStatusBar::OnSize)
+BEGIN_EVENT_TABLE(SMStatusBar, wxStatusBar)
+    EVT_SIZE(SMStatusBar::OnSize)
 END_EVENT_TABLE()
 
 /**
@@ -18,7 +18,7 @@ END_EVENT_TABLE()
  * @param parent der Parent, der diese StatusBar halten soll
  * @param style der Style der StatusBar
  */
-SCStatusBar::SCStatusBar(wxWindow *parent, long style) 
+SMStatusBar::SMStatusBar(wxWindow *parent, long style) 
 : wxStatusBar(parent, wxID_ANY, style, _("")) {
     // anders als zur herkömmlichen StatusBar erhält diese hier explizit einen
     // wxStaticText; dies ermöglicht ein besseres Customizing 
@@ -32,7 +32,7 @@ SCStatusBar::SCStatusBar(wxWindow *parent, long style)
  * Text innerhalb der StatusBar repositioniert werden, was mit dieser Methode
  * erfolgt.
  */
-void SCStatusBar::repositionText() {
+void SMStatusBar::repositionText() {
     if (!statusText ) {
         return;
     }
@@ -47,7 +47,7 @@ void SCStatusBar::repositionText() {
  * auszurichten.
  * @param event ein wxSizeEvent
  */
-void SCStatusBar::OnSize(wxSizeEvent& event) {
+void SMStatusBar::OnSize(wxSizeEvent& event) {
     this->repositionText();
     event.Skip();   // weitere Verarbeitung des wxSizeEvents für die StatusBar unterbinden
 }
@@ -58,7 +58,7 @@ void SCStatusBar::OnSize(wxSizeEvent& event) {
  * zentriertem weißem Text und einem roten Hintergrund. 
  * @param style der zu setzende Style
  */
-void SCStatusBar::setStatusStyle(long style) {
+void SMStatusBar::setStatusStyle(long style) {
     switch (style) {
         case STATUS_NORMAL:
             backgroundColour = wxSystemSettings::GetColour(wxSYS_COLOUR_MENU);
@@ -82,7 +82,7 @@ void SCStatusBar::setStatusStyle(long style) {
 /**
  * Wendet die gesetzten Style-Attribute an.
  */
-void SCStatusBar::applyStatusStyle() {
+void SMStatusBar::applyStatusStyle() {
     this->SetBackgroundColour(backgroundColour);
     statusText->SetForegroundColour(foregroundColour);
     this->SetWindowStyle(border);
@@ -95,7 +95,7 @@ void SCStatusBar::applyStatusStyle() {
  * @param text zu setzende Text
  * @param number das gewünschte Feld StatusBar-Feld (hier stets das 0-te)
  */
-void SCStatusBar::SetStatusText(const wxString& text, int number) {
+void SMStatusBar::SetStatusText(const wxString& text, int number) {
     statusText->SetLabel(text);
     this->repositionText();
 }
@@ -104,7 +104,7 @@ void SCStatusBar::SetStatusText(const wxString& text, int number) {
  * Zum Setzen der Hintergrundfarbe.
  * @param colour die gewünschte Hintergrundfarbe
  */
-void SCStatusBar::setBackgroundColour(const wxColour& colour) {
+void SMStatusBar::setBackgroundColour(const wxColour& colour) {
     this->SetBackgroundColour(colour);
     this->backgroundColour = colour;
 }
@@ -113,7 +113,7 @@ void SCStatusBar::setBackgroundColour(const wxColour& colour) {
  * Dient zum Setzen der Schriftfarbe.
  * @param colour die geünschte Schriftfarbe
  */
-void SCStatusBar::setForegroundColour(const wxColour& colour) {
+void SMStatusBar::setForegroundColour(const wxColour& colour) {
     statusText->SetForegroundColour(colour);
     this->foregroundColour = colour;
 }
@@ -122,7 +122,7 @@ void SCStatusBar::setForegroundColour(const wxColour& colour) {
  * Setzt die Ausrichtung des Textes.
  * @param alignment die gewünschte Textausrichtung
  */
-void SCStatusBar::setAlignment(long alignment) {
+void SMStatusBar::setAlignment(long alignment) {
     statusText->SetWindowStyle(alignment);
     this->alignment = alignment;
 }
@@ -131,7 +131,7 @@ void SCStatusBar::setAlignment(long alignment) {
  * Der Rahmen der StatusBar kann hier gesetzt werden.
  * @param border der gewünschte Rahmen
  */
-void SCStatusBar::setBorder(long border) {
+void SMStatusBar::setBorder(long border) {
     this->SetWindowStyle(border);
     this->border = border;
 }

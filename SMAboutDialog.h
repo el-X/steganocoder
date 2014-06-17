@@ -5,8 +5,8 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#ifndef SCABOUTDIALOG_H
-#define	SCABOUTDIALOG_H
+#ifndef SMABOUTDIALOG_H
+#define	SMABOUTDIALOG_H
 
 #include <wx/bitmap.h>
 #include <wx/image.h>
@@ -23,15 +23,15 @@
 #include <wx/string.h>
 #include <wx/hyperlink.h>
 
-class SCAboutDialog : public wxDialog {
+class SMAboutDialog : public wxDialog {
 public:
 
-    SCAboutDialog(wxWindow* parent, wxWindowID id = wxID_ANY,
+    SMAboutDialog(wxWindow* parent, wxWindowID id = wxID_ANY,
             const wxString& title = wxEmptyString,
             const wxPoint& pos = wxDefaultPosition,
             const wxSize& size = wxDefaultSize);
 
-    virtual ~SCAboutDialog() {
+    virtual ~SMAboutDialog() {
     };
 protected:
     wxPanel* mainPanel;
@@ -63,5 +63,5 @@ protected:
     void doLayout();
 };
 
-#endif	/* SCABOUTDIALOG_H */
+#endif	/* SMABOUTDIALOG_H */
 

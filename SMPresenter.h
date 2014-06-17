@@ -5,19 +5,19 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#ifndef SCPRESENTER_H
-#define	SCPRESENTER_H
+#ifndef SMPRESENTER_H
+#define	SMPRESENTER_H
 
-#include "SCView.h"
-#include "SCModel.h"
-#include "SCAboutDialog.h"
+#include "SMView.h"
+#include "SMModel.h"
+#include "SMAboutDialog.h"
 
-class SCPresenter : public wxApp {
+class SMPresenter : public wxApp {
 public:
     virtual bool OnInit();
 private:
-    SCView* view;
-    SCModel* model;
+    SMView* view;
+    SMModel* model;
     void init();
     void initImageHandlers();
     void onOpen(wxCommandEvent& event);
@@ -40,7 +40,7 @@ private:
     wxDECLARE_EVENT_TABLE();
 };
 
-DECLARE_APP(SCPresenter)
+DECLARE_APP(SMPresenter)
 
-#endif	/* SCPRESENTER_H */
+#endif	/* SMPRESENTER_H */
 

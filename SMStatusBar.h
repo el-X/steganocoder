@@ -5,22 +5,22 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#ifndef SCSTATUSBAR_H
-#define	SCSTATUSBAR_H
+#ifndef SMSTATUSBAR_H
+#define	SMSTATUSBAR_H
 
 #include <wx/string.h>
 #include <wx/statusbr.h>
 #include <wx/stattext.h>
 #include <wx/sizer.h>
 
-class SCStatusBar: public wxStatusBar {
+class SMStatusBar: public wxStatusBar {
 public:
     enum STATUS_STYLE {
         STATUS_NORMAL = 1,
         STATUS_ERROR = 2
     };
-    SCStatusBar(wxWindow *parent, long style);
-    virtual ~SCStatusBar() {};
+    SMStatusBar(wxWindow *parent, long style);
+    virtual ~SMStatusBar() {};
     void OnSize(wxSizeEvent& event);
     void SetStatusText(const wxString& text, int number = 0);
     void setStatusStyle(long style);
@@ -61,5 +61,5 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-#endif	/* SCSTATUSBAR_H */
+#endif	/* SMSTATUSBAR_H */
 

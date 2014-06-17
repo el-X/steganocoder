@@ -5,9 +5,9 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#include "SCAboutDialog.h"
+#include "SMAboutDialog.h"
 
-SCAboutDialog::SCAboutDialog(wxWindow* parent, wxWindowID id,
+SMAboutDialog::SMAboutDialog(wxWindow* parent, wxWindowID id,
         const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxDialog(parent, id, title, pos, size) {
     this->SetTitle(_(TEXT_TITLE));
@@ -18,7 +18,7 @@ SCAboutDialog::SCAboutDialog(wxWindow* parent, wxWindowID id,
 /**
  * Erstellt alle Widgets des About-Dialogs.
  */
-void SCAboutDialog::create() {
+void SMAboutDialog::create() {
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
     appImage = new wxStaticBitmap(mainPanel, wxID_ANY, wxBITMAP_PNG(monkey_about), wxDefaultPosition, wxDefaultSize, 0);
@@ -40,7 +40,7 @@ void SCAboutDialog::create() {
 /**
  * Sorgt für das Layout des About-Dialogs.
  */
-void SCAboutDialog::doLayout() {
+void SMAboutDialog::doLayout() {
     wxBoxSizer* mainPanelSizer;
     wxBoxSizer* mainSizer;
     wxBoxSizer* copyleftSizer;

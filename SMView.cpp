@@ -5,13 +5,13 @@
  * HS BREMEN, SS2014, TI6.2
  */
 
-#include "SCView.h"
+#include "SMView.h"
 
 /**
  * Erstellt alle GUI-Elemente des Fensters.
  */
-void SCView::create() {
-    aboutDialog = new SCAboutDialog(this);
+void SMView::create() {
+    aboutDialog = new SMAboutDialog(this);
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
     this->SetTitle(_(TEXT_TITLE));
@@ -23,7 +23,7 @@ void SCView::create() {
     this->createUpperRightBox();
     this->createLowerRightBox();
 
-    statusBar = new SCStatusBar(this, wxSTB_DEFAULT_STYLE);
+    statusBar = new SMStatusBar(this, wxSTB_DEFAULT_STYLE);
     this->setStatusBarText(_(TEXT_WELCOME));
     this->SetStatusBar(statusBar);
 }
@@ -31,7 +31,7 @@ void SCView::create() {
 /**
  * Sorgt dafür, dass die erzeugten Widgets an ihren rechten Platz gelangen.
  */
-void SCView::doLayout() {
+void SMView::doLayout() {
     wxBoxSizer* mainPanelSizer;
     wxBoxSizer* mainSizer;
     wxBoxSizer* leftSizer;
@@ -76,7 +76,7 @@ void SCView::doLayout() {
  * Funktion zum Anzeigen eines SplashScreens, die zum Start des Programms 
  * aufgerufen wird.
  */
-void SCView::showSplashScreen() {
+void SMView::showSplashScreen() {
     wxBitmap bitmap(wxBITMAP_PNG(monkey_splash));
     // Code::Blocks SplashScreen zum Darstellen von transparenten Bitmaps
     cbSplashScreen* splash = new cbSplashScreen(bitmap, -1, this, wxID_ANY);
@@ -88,7 +88,7 @@ void SCView::showSplashScreen() {
  * Erzeugt eine MenuBar, die dem Benutzer Programm-Interaktionsmögichkeiten 
  * bereitstellt.
  */
-void SCView::createMenuBar() {
+void SMView::createMenuBar() {
     // File
     wxMenu *menuFile = new wxMenu;
     wxMenuItem *loadUnmodImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_UNMOD_IMG,
@@ -138,7 +138,7 @@ void SCView::createMenuBar() {
  * Dient zum Erstellen der GUI-Elemente des oberen linken Areals; dort, wo
  * das unmodifizierte Bild seinen Platz findet.
  */
-void SCView::createUpperLeftBox() {
+void SMView::createUpperLeftBox() {
     unmodImgScrolledWindow = new wxScrolledWindow(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
     unmodImgScrolledWindow->SetScrollRate(1, 1);
     unmodStaticBitmap = new wxStaticBitmap(unmodImgScrolledWindow, wxID_ANY, wxBitmap(0, 0, -1), wxDefaultPosition, wxDefaultSize, 0);
@@ -154,7 +154,7 @@ void SCView::createUpperLeftBox() {
  * Erzeugung der GUI-Elemente unten links. Hierzu zählt ein TextCtrl mit der zu
  * verschlüsselnden bzw. entschlüsselten Nachricht.
  */
-void SCView::createLowerLeftBox() {
+void SMView::createLowerLeftBox() {
     secretMsgInput = new wxTextCtrl(mainPanel, ID_SECRET_MSG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_TXT_LENGTH), wxDefaultPosition, wxSize(-1, -1), 0);
     txtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, -1), wxTE_READONLY);
@@ -164,7 +164,7 @@ void SCView::createLowerLeftBox() {
 /**
  * Erzeugt die Buttons zum Ko- und Dekodieren von Bildern.
  */
-void SCView::createMiddleBox() {
+void SMView::createMiddleBox() {
     encodeBtn = new wxButton(mainPanel, ID_ENCODE, _(BTN_ENCODE), wxDefaultPosition, wxDefaultSize, 0);
     encodeBtn->SetBitmap(wxBITMAP_PNG(encode16x16), wxRIGHT);
     decodeBtn = new wxButton(mainPanel, ID_DECODE, _(BTN_DECODE), wxDefaultPosition, wxDefaultSize, 0);
@@ -174,7 +174,7 @@ void SCView::createMiddleBox() {
 /**
  * Die GUI-Elemente für das verschlüsselte Bild werden hier erstellt.
  */
-void SCView::createUpperRightBox() {
+void SMView::createUpperRightBox() {
     modImgScrolledWindow = new wxScrolledWindow(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
     modImgScrolledWindow->SetScrollRate(1, 1);
     modStaticBitmap = new wxStaticBitmap(modImgScrolledWindow, wxID_ANY, wxBitmap(0, 0, -1), wxDefaultPosition, wxDefaultSize, 0);
@@ -186,14 +186,14 @@ void SCView::createUpperRightBox() {
 /**
  * Das Bitmuster des modifizierten Bilds wird hier erzeugt.
  */
-void SCView::createLowerRightBox() {
+void SMView::createLowerRightBox() {
     bitPatternOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
 }
 
 /**
  * Erstellt das Layout für das unmodifizierte Bild.
  */
-void SCView::layoutUpperLeftBox() {
+void SMView::layoutUpperLeftBox() {
     unmodImgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_UNMOD_IMG)), wxVERTICAL);
     wxBoxSizer* unmodImgScrolledSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* unmodImgInfoSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -216,7 +216,7 @@ void SCView::layoutUpperLeftBox() {
 /**
  * Hier erfolgt das Layout für die zu verschlüsselnde/entschlüsselte Nachricht.
  */
-void SCView::layoutLowerLeftBox() {
+void SMView::layoutLowerLeftBox() {
     secretMsgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_SECRET_MSG)), wxVERTICAL);
     wxBoxSizer* txtLengthSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -231,7 +231,7 @@ void SCView::layoutLowerLeftBox() {
 /**
  * Das Layout für das modifizierte Bild wir hier erstellt.
  */
-void SCView::layoutUpperRightBox() {
+void SMView::layoutUpperRightBox() {
     modImgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_MOD_IMG)), wxVERTICAL);
     wxBoxSizer* modImgScrolledSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* modImgBtnSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -250,7 +250,7 @@ void SCView::layoutUpperRightBox() {
 /**
  * Das TextCtrl für das Bitmuster kommt hier an seinen Platz.
  */
-void SCView::layoutLowerRightBox() {
+void SMView::layoutLowerRightBox() {
     bitPatternSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_BIT_PATERN)), wxVERTICAL);
     bitPatternSizer->Add(bitPatternOutput, 1, wxALL | wxEXPAND, 5);
 }
@@ -259,8 +259,8 @@ void SCView::layoutLowerRightBox() {
  * Dient zum Setzen eines ganz gewönlichen Textes in der StatusBar.
  * @param text der darzustellende StatusBar-Text
  */
-void SCView::setStatusBarText(const wxString& text) {
-    statusBar->setStatusStyle(SCStatusBar::STATUS_NORMAL);
+void SMView::setStatusBarText(const wxString& text) {
+    statusBar->setStatusStyle(SMStatusBar::STATUS_NORMAL);
     statusBar->SetStatusText(text);
 }
 
@@ -270,8 +270,8 @@ void SCView::setStatusBarText(const wxString& text) {
  * Fehlerdialogen dar.
  * @param text der darzustellende Fehlertext
  */
-void SCView::setStatusBarErrorText(const wxString& text) {
-    statusBar->setStatusStyle(SCStatusBar::STATUS_ERROR);
+void SMView::setStatusBarErrorText(const wxString& text) {
+    statusBar->setStatusStyle(SMStatusBar::STATUS_ERROR);
     statusBar->SetStatusText(text);
 }
 
@@ -284,9 +284,9 @@ void SCView::setStatusBarErrorText(const wxString& text) {
  * @param help der anzuzeigende Hilfetext
  * @param show gibt an, ob ein Menü geöffnet wurde
  */
-void SCView::DoGiveHelp(const wxString& help, bool show) {
+void SMView::DoGiveHelp(const wxString& help, bool show) {
     // nur anzeigen, wenn gerade keine Fehlermeldung auf der StatusBar ausgegeben wird
-    if (statusBar->getStatusStyle() != SCStatusBar::STATUS_ERROR) {
+    if (statusBar->getStatusStyle() != SMStatusBar::STATUS_ERROR) {
         wxString text;  // der zu setzende StatusText
         if (show) {  // ein Menü wurde geöffnet
             if (oldStatusText.empty()) { 
