@@ -293,6 +293,15 @@ unsigned char* SCModel::getModCarrierBytes() const {
 };
 
 /**
+ * Gibt die Länge des Bytemusters des modifierten Bildes zurück
+ * 
+ * @return Länge des Bytemusters des modiziferten Bildes
+ */
+size_t SCModel::getModCarrierBytesLength() const {
+    return modCarrierBytesLength;
+};
+
+/**
  * Setzt das Bytemuster des modifizierten Bildes auf das übergeben Bytemuster
  * 
  * @param modBytes Bytemuster, welches auf das Bytemuster des modifizierten Bildes gesetzt wird
@@ -318,6 +327,15 @@ void SCModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
  */
 unsigned char* SCModel::getUnmodCarrierBytes() const {
     return unmodCarrierBytes;
+};
+
+/**
+ * Gibt die Länge des Bytemusters des unmodifierten Bildes zurück
+ * 
+ * @return Länge des Bytemusters des unmodiziferten Bildes
+ */
+size_t SCModel::getUnmodCarrierBytesLength() const {
+    return unmodCarrierBytesLength;
 };
 
 /**

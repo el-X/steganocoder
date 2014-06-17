@@ -20,8 +20,10 @@ public:
     void encode(const std::string& msg);
     std::string decode();
     unsigned char* getModCarrierBytes() const;
+    size_t getModCarrierBytesLength() const;
     void setModCarrierBytes(unsigned char* modBytes, size_t len);
     unsigned char* getUnmodCarrierBytes() const;
+    size_t getUnmodCarrierBytesLength() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len);
     bool checkForHeaderSignature() const;
     std::string replaceNonASCII(std::string& str);
