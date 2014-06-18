@@ -67,8 +67,8 @@ void SMPresenter::init() {
     this->setSaveAllowed(false);
     this->setEncodingAllowed(false);
     this->setDecodingAllowed(false);
-    view->getTxtLengthOutput()->SetValue(to_string(0));
-    view->getMaxTxtLengthOutput()->SetValue(to_string(0));
+    view->getTxtLengthOutput()->SetValue("0");
+    view->getMaxTxtLengthOutput()->SetValue("0");
     view->getSecretMsgInput()->SetEditable(false);
 }
 
@@ -81,6 +81,8 @@ void SMPresenter::initImageHandlers() {
     wxImage::AddHandler(new wxJPEGHandler);
     wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxICOHandler);
+    wxImage::AddHandler(new wxTIFFHandler());
+    wxImage::AddHandler(new wxTGAHandler());
 }
 
 /**
@@ -92,12 +94,16 @@ void SMPresenter::initImageHandlers() {
  */
 void SMPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
-            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif)|*.bmp;*.jpg;*.jpeg;*.png;*.gif"));
+            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga)|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga"));
     openDialog.SetDirectory(wxGetHomeDir());
     openDialog.CentreOnParent();
 
     if (openDialog.ShowModal() == wxID_OK) {
         wxImage image = openDialog.GetPath();
+        if (!image.IsOk()) {
+            view->setStatusBarErrorText(_("Tried to load corrupted image!"));
+            return;
+        }
         // Anzahl der Bytes = Hoehe x Breite x RGB
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
         if (event.GetId() == SMView::ID_LOAD_MOD_IMG) {
@@ -108,10 +114,10 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             // Prüfen ob das Bild eine verstekcte Nachricht enthält.
             if (model->checkForHeaderSignature()) {
                 this->setDecodingAllowed(true);
-                view->setStatusBarText("Ready to decode!");
+                view->setStatusBarText(_("Ready to decode!"));
             } else {
                 this->setDecodingAllowed(false);
-                view->setStatusBarErrorText("Loaded picture has no hidden message!");
+                view->setStatusBarErrorText(_("Loaded picture has no hidden message!"));
             }
             view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
             view->getSecretMsgInput()->Clear();
@@ -134,14 +140,18 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
 //            model->setModCarrierBytes(emptyCharArray, 1);
             model->resetModCarrierBytes();
             view->getModStaticBitmap()->SetBitmap(wxBitmap());
-            bool isSecMsgEmpty = view->getSecretMsgInput()->GetValue().empty();
+            int secMsgLen = view->getSecretMsgInput()->GetValue().size();
             
-            // -----------------------------------------------------------------
-            // TODO Check the maxSize! Is the picture big enough?
-            // -----------------------------------------------------------------
-            this->setEncodingAllowed(!isSecMsgEmpty);
-            if (!isSecMsgEmpty) {
-                view->setStatusBarText("Ready to encode!");
+            // Im Falle dass schon vorher ein Bild da war..
+            if (secMsgLen > getMaxTextLength()) {
+                this->setEncodingAllowed(false);
+                view->setStatusBarErrorText(_("Your message is too long for the given image!"));
+            } else if (secMsgLen == 0){
+                this->setEncodingAllowed(false);
+                view->setStatusBarText(_("Waiting for message."));
+            } else {
+                this->setEncodingAllowed(true);
+                view->setStatusBarText(_("Ready to encode!"));
             }
         }
         view->Layout();
@@ -161,7 +171,7 @@ void SMPresenter::onSave(wxCommandEvent& event) {
     if (dialog.ShowModal() == wxID_OK) {
         wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
         modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->setStatusBarText("Image containing the secret message saved under: " + dialog.GetPath());
+        view->setStatusBarText(_("Image containing the secret message saved under: " + dialog.GetPath()));
     }
 }
 
@@ -235,15 +245,14 @@ void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
     if (!unmodBmpSet || size == 0 || size > maxLength) {
         this->setEncodingAllowed(false);
         if (unmodBmpSet && size > maxLength) {
-            view->setStatusBarErrorText("Your message is too long for the given picture!");
+            view->setStatusBarErrorText(_("Your message is too long for the given image!"));
         } else if (!isModBmpSet()) {
-            view->setStatusBarText(welcomeMsg);
+            view->setStatusBarText(_("Waiting for message."));
         }
     } else {
         this->setEncodingAllowed(true);
-        view->setStatusBarText("Ready to encode!");
+        view->setStatusBarText(_("Ready to encode!"));
     }
-    view->Layout();
 }
 
 /**
