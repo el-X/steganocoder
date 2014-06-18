@@ -94,7 +94,7 @@ void SMPresenter::initImageHandlers() {
  */
 void SMPresenter::onLoad(wxCommandEvent& event) {
     wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
-            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga)|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga"));
+            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico)|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico"));
     openDialog.SetDirectory(wxGetHomeDir());
     openDialog.CentreOnParent();
 
