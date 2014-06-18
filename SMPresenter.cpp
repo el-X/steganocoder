@@ -117,6 +117,7 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             view->getSecretMsgInput()->Clear();
             view->getSecretMsgInput()->SetEditable(false);
             this->setEncodingAllowed(false);
+//            model->setUnmodCarrierBytes(emptyCharArray, 0);
             model->resetUnmodCarrierBytes();
             view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
@@ -130,6 +131,7 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             view->getSecretMsgInput()->SetEditable(true);
             this->setDecodingAllowed(false);
             this->setSaveAllowed(false);
+//            model->setModCarrierBytes(emptyCharArray, 1);
             model->resetModCarrierBytes();
             view->getModStaticBitmap()->SetBitmap(wxBitmap());
             bool isSecMsgEmpty = view->getSecretMsgInput()->GetValue().empty();
@@ -180,6 +182,7 @@ void SMPresenter::onEncode(wxCommandEvent& event) {
     // Bilddaten an das Model übergeben und den Encodingvorgang starten.
     model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
     model->encode(message.ToStdString());
+    
     // Modifizierte Bilddaten setzen und anzeigen.
     image.SetData(model->getModCarrierBytes());
     view->getModStaticBitmap()->SetBitmap(image);

@@ -364,8 +364,7 @@ void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
  */
 void SMModel::resetModCarrierBytes() {
     
-    delete[] modCarrierBytes;
-    modCarrierBytes = NULL;
+    modCarrierBytes = 0;
     modCarrierBytesLength = 0;
 }
 
@@ -375,8 +374,7 @@ void SMModel::resetModCarrierBytes() {
  */
 void SMModel::resetUnmodCarrierBytes() {
     
-    delete[] unmodCarrierBytes;
-    unmodCarrierBytes = NULL;
+    unmodCarrierBytes = 0;
     unmodCarrierBytesLength = 0;
 }
 

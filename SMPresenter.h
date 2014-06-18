@@ -36,6 +36,7 @@ private:
     bool isUnmodBmpSet();
     bool isModBmpSet();
     const wxString welcomeMsg = _("Welcome to SteganoMonkey!");
+    unsigned char* emptyCharArray = new unsigned char[1] {'\0'};
     wxDECLARE_EVENT_TABLE();
 };
 
