@@ -1,1 +1,0 @@
-All images wich are used by the application must be placed in this folder =)
