@@ -111,11 +111,7 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
                 view->setStatusBarText("Ready to decode!");
             } else {
                 this->setDecodingAllowed(false);
-                wxMessageDialog notationDialog(NULL,
-                        wxT("Loaded picture has no hidden message!"),
-                        wxT("Info"), wxOK | wxICON_WARNING);
-                notationDialog.CentreOnParent();
-                notationDialog.ShowModal();
+                view->setStatusBarErrorText("Loaded picture has no hidden message!");
             }
             view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
             view->getSecretMsgInput()->Clear();
