@@ -121,7 +121,7 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             view->getSecretMsgInput()->Clear();
             view->getSecretMsgInput()->SetEditable(false);
             this->setEncodingAllowed(false);
-            model->setUnmodCarrierBytes(emptyCharArray, 0);
+            model->resetUnmodCarrierBytes();
             view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
             // Bild ohne versteckter Nachricht wurde geladen.
@@ -134,9 +134,13 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             view->getSecretMsgInput()->SetEditable(true);
             this->setDecodingAllowed(false);
             this->setSaveAllowed(false);
-            model->setModCarrierBytes(emptyCharArray, 0);
+            model->resetModCarrierBytes();
             view->getModStaticBitmap()->SetBitmap(wxBitmap());
             bool isSecMsgEmpty = view->getSecretMsgInput()->GetValue().empty();
+            
+            // -----------------------------------------------------------------
+            // TODO Check the maxSize! Is the picture big enough?
+            // -----------------------------------------------------------------
             this->setEncodingAllowed(!isSecMsgEmpty);
             if (!isSecMsgEmpty) {
                 view->setStatusBarText("Ready to encode!");

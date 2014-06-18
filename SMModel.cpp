@@ -17,12 +17,6 @@
 
 using namespace std;
 
-SMModel::SMModel() {
-}
-
-SMModel::~SMModel() {
-}
-
 /**
  * Modifiziert die Bytes für das enkodierte Bild so,
  * dass in den letzten Bits eines jeden Bytes des Bildes
@@ -353,4 +347,20 @@ void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
         unmodCarrierBytes[i] = unmodBytes[i];
     }
 };
+
+/**
+ * Setzt die modifizierten Bytes zurück.
+ */
+void SMModel::resetModCarrierBytes() {
+    modCarrierBytes = emptyCharArray;
+    modCarrierBytesLength = 0;
+}
+
+/**
+ * Setzt die noch nicht modifizierten Bytes zurück.
+ */
+void SMModel::resetUnmodCarrierBytes() {
+    unmodCarrierBytes = emptyCharArray;
+    unmodCarrierBytesLength = 0;
+}
 

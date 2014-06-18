@@ -13,8 +13,8 @@
 class SMModel {
 public:
 
-    SMModel();
-    virtual ~SMModel();
+    SMModel() {};
+    virtual ~SMModel() {};
     unsigned int getHeaderSize();
     std::string getModBitPattern();
     void encode(const std::string& msg);
@@ -26,6 +26,8 @@ public:
     size_t getUnmodCarrierBytesLength() const;
     void setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len);
     bool checkForHeaderSignature() const;
+    void resetModCarrierBytes();
+    void resetUnmodCarrierBytes();
 private:
     std::string charToBits(const unsigned char& c) const;
     unsigned char bitsToChar(const std::string& bits) const;
@@ -35,6 +37,7 @@ private:
     size_t modCarrierBytesLength = 0;
     unsigned char* unmodCarrierBytes;
     size_t unmodCarrierBytesLength = 0;
+    unsigned char* emptyCharArray = new unsigned char[0];
 };
 
 #endif	/* SMMODEL_H */
