@@ -53,7 +53,7 @@ void SMModel::encode(const string& msg) {
     }
 
     // Freigeben des Speicherplatzes für das modizifierte Bild
-    delete[] modCarrierBytes;
+    resetModCarrierBytes();
     
     // Reservieren von neuem Speicherplatz für das modizifierte Bild
     // in der Größe des unmodifizierten Bildes und ebenfalls Übernehmen der Länge
@@ -221,7 +221,7 @@ string SMModel::getModBitPattern() {
  * @param msg Nachricht für den ein Header erstellt werden soll
  * @return Den erstellten Header für die Nachricht
  */
-string SMModel::createHeader(const std::string& msg) {
+string SMModel::createHeader(const string& msg) {
 
     //Header beginnt mit der Signatur
     string header(SGN);
@@ -263,12 +263,12 @@ string SMModel::charToBits(const unsigned char& c) const {
  * @param bits Die Bitrepräsentation des Zeichens
  * @return Das Zeichen, welches der Bitrepräsentation entspricht
  */
-unsigned char SMModel::bitsToChar(const std::string& bits) const {
+unsigned char SMModel::bitsToChar(const string& bits) const {
     //Prüfen, ob das Bitmuster 8 Bits lang ist (1 Byte = 1 Zeichen)
     assert(bits.size() == 8);
 
     //Die Bitrepräsentation des Zeichens als 8-Bit bitset speichern
-    std::bitset < 8 > bitsArray(bits);
+    bitset < 8 > bitsArray(bits);
 
     //Die Bitrepräsentation als Dezimalzahl speichern
     unsigned int asciiPos = bitsArray.to_ulong();
@@ -304,7 +304,7 @@ size_t SMModel::getModCarrierBytesLength() const {
 void SMModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
 
     // Freigeben von Speicherplatz von dem modifizierten Bild
-    delete[] modCarrierBytes;
+    resetModCarrierBytes();
     
     // Reservieren von neuem Speicherplatz in der Größe der übergebenen Länge
     modCarrierBytes = new unsigned char[len];
@@ -344,7 +344,7 @@ size_t SMModel::getUnmodCarrierBytesLength() const {
 void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
 
     // Freigeben von Speicherplatz von dem unmodifizierten Bild
-    delete[] unmodCarrierBytes;
+    resetUnmodCarrierBytes();
     
     // Reservieren von neuem Speicherplatz in der Größe der übergebenen Länge
     unmodCarrierBytes = new unsigned char[len];
@@ -358,18 +358,22 @@ void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
 };
 
 /**
- * Setzt die modifizierten Bytes zurück.
+ * Gibt den Speicherplatz von dem Bytemuster des modifizierten Bildes frei und
+ * setzt die Länge des Bytemusters zurück.
  */
 void SMModel::resetModCarrierBytes() {
-    modCarrierBytes = emptyCharArray;
+    
+    delete[] modCarrierBytes;
     modCarrierBytesLength = 0;
 }
 
 /**
- * Setzt die noch nicht modifizierten Bytes zurück.
+ * Gibt den Speicherplatz von dem Bytemuster des unmodifizierten Bildes frei und
+ * setzt die Länge des Bytemusters zurück.
  */
 void SMModel::resetUnmodCarrierBytes() {
-    unmodCarrierBytes = emptyCharArray;
+    
+    delete[] unmodCarrierBytes;
     unmodCarrierBytesLength = 0;
 }
 
