@@ -20,7 +20,7 @@ using namespace std;
 /**
  * Modifiziert die Bytes für das enkodierte Bild so,
  * dass in den letzten Bits eines jeden Bytes des Bildes
- * die übergeben Nachricht gespeichert wird.
+ * die übergebene Nachricht gespeichert wird.
  * 
  * @param msg In das Bild einzufügende Nachricht
  */
@@ -30,7 +30,7 @@ void SMModel::encode(const string& msg) {
     string encoded_msg(createHeader(msg) + msg);
     // Länge der gesamten Nachricht (inkl. Header) speichern
     unsigned int encoded_msg_size = encoded_msg.size();
-
+    
     // Speicherplatz für die Binärrepräsentation der Nachricht reservieren
     // Ein Zeichen der Nachricht benötigt 8 Bit
     char* binary = new char[encoded_msg_size * 8];
@@ -81,7 +81,7 @@ void SMModel::encode(const string& msg) {
 }
 
 /**
- * Methode zum ermitteln der Länge des Headers
+ * Methode zum Ermitteln der Länge des Headers
  * 
  * @return Länge des Headers
  */
@@ -92,8 +92,9 @@ unsigned int SMModel::getHeaderSize() {
 }
 
 /**
- * Holt eine versteckte Nachricht, welche in einem Bild als Bitrepräsentation
- * vorhanden ist.
+ * Holt eine versteckte Nachricht, welche in der Bitrepräsentation des
+ * modizifierten Bildes vorhanden ist.
+ * 
  * @return Versteckte Nachricht
  */
 string SMModel::decode() {
