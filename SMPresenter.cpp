@@ -173,24 +173,23 @@ void SMPresenter::onSave(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onEncode(wxCommandEvent& event) {
+
+    // Die eingegebene Nachricht holen.
     wxString message = view->getSecretMsgInput()->GetValue();
-    wxImage newImage;
 
     // Das Bild ohne Nachricht holen.
     wxImage image = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
     size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
+    
     // Bilddaten an das Model übergeben und den Encodingvorgang starten.
     model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
     model->encode(message.ToStdString());
-
-    // Modifizierte Bilddaten holen und anzeigen.
-    newImage = view->getUnmodStaticBitmap()->GetBitmap().ConvertToImage();
-    newImage.SetData(model->getModCarrierBytes());
-    view->getModStaticBitmap()->SetBitmap(newImage);
+    // Modifizierte Bilddaten setzen und anzeigen.
+    image.SetData(model->getModCarrierBytes());
+    view->getModStaticBitmap()->SetBitmap(image);
     view->getBitpatternOutput()->SetValue(model->getModBitPattern());
     this->setSaveAllowed(true);
     view->Layout();
-
 }
 
 /**
@@ -213,6 +212,7 @@ void SMPresenter::onDecode(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
+
     // Ersetze alle nicht ASCII Zeichen.
     wxTextCtrl* msgInput = view->getSecretMsgInput();
     wxString rawInput = msgInput->GetValue();
