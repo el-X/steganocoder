@@ -52,6 +52,9 @@ void SMModel::encode(const string& msg) {
         byte_counter += 8;
     }
 
+    // Freigeben des Speicherplatzes für das modizifierte Bild
+    delete[] modCarrierBytes;
+    
     // Reservieren von neuem Speicherplatz für das modizifierte Bild
     // in der Größe des unmodifizierten Bildes und ebenfalls Übernehmen der Länge
     modCarrierBytes = new unsigned char[unmodCarrierBytesLength];
@@ -300,6 +303,9 @@ size_t SMModel::getModCarrierBytesLength() const {
  */
 void SMModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
 
+    // Freigeben von Speicherplatz von dem modifizierten Bild
+    delete[] modCarrierBytes;
+    
     // Reservieren von neuem Speicherplatz in der Größe der übergebenen Länge
     modCarrierBytes = new unsigned char[len];
     modCarrierBytesLength = len;
@@ -337,6 +343,9 @@ size_t SMModel::getUnmodCarrierBytesLength() const {
  */
 void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
 
+    // Freigeben von Speicherplatz von dem unmodifizierten Bild
+    delete[] unmodCarrierBytes;
+    
     // Reservieren von neuem Speicherplatz in der Größe der übergebenen Länge
     unmodCarrierBytes = new unsigned char[len];
     unmodCarrierBytesLength = len;
