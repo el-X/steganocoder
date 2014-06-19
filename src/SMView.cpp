@@ -14,7 +14,7 @@ void SMView::create() {
     aboutDialog = new SMAboutDialog(this);
     mainPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
-    this->SetTitle(_(TEXT_TITLE));
+    this->SetTitle(TEXT_TITLE);
     this->SetIcon(wxICON(appicon));
     this->createMenuBar();
     this->createUpperLeftBox();
@@ -24,7 +24,7 @@ void SMView::create() {
     this->createLowerRightBox();
 
     statusBar = new SMStatusBar(this, wxSTB_DEFAULT_STYLE);
-    this->setStatusBarText(_(TEXT_WELCOME));
+    this->setStatusBarText(TEXT_WELCOME);
     this->SetStatusBar(statusBar);
 }
 
@@ -92,18 +92,18 @@ void SMView::createMenuBar() {
     // File
     wxMenu *menuFile = new wxMenu;
     wxMenuItem *loadUnmodImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_UNMOD_IMG,
-            _(MENUITEM_LOAD_UNMOD_IMG_TEXT), _(MENUITEM_LOAD_UNMOD_IMG_HELP));
+            MENUITEM_LOAD_UNMOD_IMG_TEXT, MENUITEM_LOAD_UNMOD_IMG_HELP);
     loadUnmodImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
     menuFile->Append(loadUnmodImgMenuItem);
     menuFile->AppendSeparator();
 
     wxMenuItem *loadModImgMenuItem = new wxMenuItem(menuFile, ID_LOAD_MOD_IMG,
-            _(MENUITEM_LOAD_MOD_IMG_TEXT), _(MENUITEM_LOAD_MOD_IMG_HELP));
+            MENUITEM_LOAD_MOD_IMG_TEXT, MENUITEM_LOAD_MOD_IMG_HELP);
     loadModImgMenuItem->SetBitmap(wxBITMAP_PNG(open16x16));
     menuFile->Append(loadModImgMenuItem);
 
     saveModImgMenuItem = new wxMenuItem(menuFile, ID_SAVE_MOD_IMG,
-            _(MENUITEM_SAVE_MOD_IMG_TEXT), _(MENUITEM_SAVE_MOD_IMG_HELP));
+            MENUITEM_SAVE_MOD_IMG_TEXT, MENUITEM_SAVE_MOD_IMG_HELP);
     saveModImgMenuItem->SetBitmap(wxBITMAP_PNG(save16x16));
     menuFile->Append(saveModImgMenuItem);
     menuFile->AppendSeparator();
@@ -114,10 +114,10 @@ void SMView::createMenuBar() {
 
     // Edit
     wxMenu *menuEdit = new wxMenu;
-    encodeMenuItem = new wxMenuItem(menuEdit, ID_ENCODE, _(MENUITEM_ENCODE_TEXT), _(MENUITEM_ENCODE_HELP));
+    encodeMenuItem = new wxMenuItem(menuEdit, ID_ENCODE, MENUITEM_ENCODE_TEXT, MENUITEM_ENCODE_HELP);
     encodeMenuItem->SetBitmap(wxBITMAP_PNG(encode16x16));
     menuEdit->Append(encodeMenuItem);
-    decodeMenuItem = new wxMenuItem(menuEdit, ID_DECODE, _(MENUITEM_DECODE_TEXT), _(MENUITEM_DECODE_HELP));
+    decodeMenuItem = new wxMenuItem(menuEdit, ID_DECODE, MENUITEM_DECODE_TEXT, MENUITEM_DECODE_HELP);
     decodeMenuItem->SetBitmap(wxBITMAP_PNG(decode16x16));
     menuEdit->Append(decodeMenuItem);
 
@@ -142,10 +142,10 @@ void SMView::createUpperLeftBox() {
     unmodImgScrolledWindow = new wxScrolledWindow(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
     unmodImgScrolledWindow->SetScrollRate(1, 1);
     unmodStaticBitmap = new wxStaticBitmap(unmodImgScrolledWindow, wxID_ANY, wxBitmap(0, 0, -1), wxDefaultPosition, wxDefaultSize, 0);
-    loadUnmodImgBtn = new wxButton(mainPanel, ID_LOAD_UNMOD_IMG, _(BTN_LOAD_IMG), wxDefaultPosition, wxDefaultSize, 0);
+    loadUnmodImgBtn = new wxButton(mainPanel, ID_LOAD_UNMOD_IMG, BTN_LOAD_IMG, wxDefaultPosition, wxDefaultSize, 0);
     loadUnmodImgBtn->SetDefault();
     unmodImgSeparator = new wxStaticLine(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-    maxTxtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_MAX_TXT_LENGTH), wxDefaultPosition, wxDefaultSize, 0);
+    maxTxtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_MAX_TXT_LENGTH, wxDefaultPosition, wxDefaultSize, 0);
     maxTxtLengthLabel->Wrap(-1);
     maxTxtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(0, -1), wxTE_READONLY);
 }
@@ -156,31 +156,31 @@ void SMView::createUpperLeftBox() {
  */
 void SMView::createLowerLeftBox() {
     secretMsgInput = new wxTextCtrl(mainPanel, ID_SECRET_MSG, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_TXT_LENGTH), wxDefaultPosition, wxSize(-1, -1), 0);
+    txtLengthLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_TXT_LENGTH, wxDefaultPosition, wxSize(-1, -1), 0);
     txtLengthOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1, -1), wxTE_READONLY);
     txtLengthLabel->Wrap(-1); // kein Wrapping
 }
 
 /**
- * Erzeugt die Buttons zum Ko- und Dekodieren von Bildern.
+ * Erzeugt die Buttons zum En- und Dekodieren von Bildern.
  */
 void SMView::createMiddleBox() {
-    encodeBtn = new wxButton(mainPanel, ID_ENCODE, _(BTN_ENCODE), wxDefaultPosition, wxDefaultSize, 0);
+    encodeBtn = new wxButton(mainPanel, ID_ENCODE, BTN_ENCODE, wxDefaultPosition, wxDefaultSize, 0);
     encodeBtn->SetBitmap(wxBITMAP_PNG(encode16x16), wxRIGHT);
-    decodeBtn = new wxButton(mainPanel, ID_DECODE, _(BTN_DECODE), wxDefaultPosition, wxDefaultSize, 0);
+    decodeBtn = new wxButton(mainPanel, ID_DECODE, BTN_DECODE, wxDefaultPosition, wxDefaultSize, 0);
     decodeBtn->SetBitmap(wxBITMAP_PNG(decode16x16), wxLEFT);
 }
 
 /**
- * Die GUI-Elemente für das verschlüsselte Bild werden hier erstellt.
+ * Erstellt die GUI-Elemente für das verschlüsselte Bild.
  */
 void SMView::createUpperRightBox() {
     modImgScrolledWindow = new wxScrolledWindow(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxSTATIC_BORDER | wxVSCROLL);
     modImgScrolledWindow->SetScrollRate(1, 1);
     modStaticBitmap = new wxStaticBitmap(modImgScrolledWindow, wxID_ANY, wxBitmap(0, 0, -1), wxDefaultPosition, wxDefaultSize, 0);
-    loadModImgBtn = new wxButton(mainPanel, ID_LOAD_MOD_IMG, _(BTN_LOAD_IMG), wxDefaultPosition, wxDefaultSize, 0);
+    loadModImgBtn = new wxButton(mainPanel, ID_LOAD_MOD_IMG, BTN_LOAD_IMG, wxDefaultPosition, wxDefaultSize, 0);
     modImgSeparator = new wxStaticLine(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-    saveModImgBtn = new wxButton(mainPanel, ID_SAVE_MOD_IMG, _(BTN_SAVE_IMG), wxDefaultPosition, wxDefaultSize, 0);
+    saveModImgBtn = new wxButton(mainPanel, ID_SAVE_MOD_IMG, BTN_SAVE_IMG, wxDefaultPosition, wxDefaultSize, 0);
 }
 
 /**
@@ -194,7 +194,7 @@ void SMView::createLowerRightBox() {
  * Erstellt das Layout für das unmodifizierte Bild.
  */
 void SMView::layoutUpperLeftBox() {
-    unmodImgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_UNMOD_IMG)), wxVERTICAL);
+    unmodImgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, TEXT_UNMOD_IMG), wxVERTICAL);
     wxBoxSizer* unmodImgScrolledSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* unmodImgInfoSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* maxTxtLengthSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -217,7 +217,7 @@ void SMView::layoutUpperLeftBox() {
  * Hier erfolgt das Layout für die zu verschlüsselnde/entschlüsselte Nachricht.
  */
 void SMView::layoutLowerLeftBox() {
-    secretMsgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_SECRET_MSG)), wxVERTICAL);
+    secretMsgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, TEXT_SECRET_MSG), wxVERTICAL);
     wxBoxSizer* txtLengthSizer = new wxBoxSizer(wxHORIZONTAL);
 
     txtLengthSizer->Add(txtLengthLabel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
@@ -229,10 +229,10 @@ void SMView::layoutLowerLeftBox() {
 }
 
 /**
- * Das Layout für das modifizierte Bild wir hier erstellt.
+ * Das Layout für das modifizierte Bild wird hier erstellt.
  */
 void SMView::layoutUpperRightBox() {
-    modImgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_MOD_IMG)), wxVERTICAL);
+    modImgSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, TEXT_MOD_IMG), wxVERTICAL);
     wxBoxSizer* modImgScrolledSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* modImgBtnSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -251,7 +251,7 @@ void SMView::layoutUpperRightBox() {
  * Das TextCtrl für das Bitmuster kommt hier an seinen Platz.
  */
 void SMView::layoutLowerRightBox() {
-    bitPatternSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, _(TEXT_BIT_PATERN)), wxVERTICAL);
+    bitPatternSizer = new wxStaticBoxSizer(new wxStaticBox(mainPanel, wxID_ANY, TEXT_BIT_PATERN), wxVERTICAL);
     bitPatternSizer->Add(bitPatternOutput, 1, wxALL | wxEXPAND, 5);
 }
 
@@ -284,11 +284,11 @@ void SMView::setStatusBarErrorText(const wxString& text) {
  * @param help der anzuzeigende Hilfetext
  * @param show gibt an, ob ein Menü geöffnet wurde
  */
-void SMView::DoGiveHelp(const wxString& help, bool show) {
+void SMView::DoGiveHelp(const wxString& help, bool menuShown) {
     // nur anzeigen, wenn gerade keine Fehlermeldung auf der StatusBar ausgegeben wird
     if (statusBar->getStatusStyle() != SMStatusBar::STATUS_ERROR) {
         wxString text;  // der zu setzende StatusText
-        if (show) {  // ein Menü wurde geöffnet
+        if (menuShown) {  // ein Menü wurde geöffnet
             if (oldStatusText.empty()) { 
                 // den alten Wert abspeichern, wenn noch nicht gesetzt
                 oldStatusText = statusBar->GetStatusText();
