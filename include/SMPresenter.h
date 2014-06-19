@@ -34,7 +34,7 @@ private:
     bool isUnmodBmpSet();
     bool isModBmpSet();
     wxDECLARE_EVENT_TABLE();
-    const wxString IMG_IN_FORMATS = _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico)|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico");
+    const wxString IMG_IN_FORMATS = _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.tga;*.ico)|*.bmp;*.jpg;*.jpeg;*.png;*.tga;*.ico");
     const wxString IMG_OUT_FORMATS = _T("Bitmap (*.bmp)|*.bmp");
     const wxString IMG_OUT_NAME = _T("top_secret.bmp");
     const wxString MSG_WELCOME = _("Welcome to SteganoMonkey!");

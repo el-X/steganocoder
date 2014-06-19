@@ -79,9 +79,7 @@ void SMPresenter::initImageHandlers() {
     wxImage::AddHandler(new wxBMPHandler);
     wxImage::AddHandler(new wxPNGHandler);
     wxImage::AddHandler(new wxJPEGHandler);
-    wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxICOHandler);
-    wxImage::AddHandler(new wxTIFFHandler());
     wxImage::AddHandler(new wxTGAHandler());
 }
 
