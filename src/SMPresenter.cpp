@@ -209,7 +209,9 @@ void SMPresenter::onEncode(wxCommandEvent& event) {
     model->encode(message.ToStdString());
     
     // Modifizierte Bilddaten setzen und anzeigen.
-    image.SetData(model->getModCarrierBytes());
+    // Zweiter Parameter auf TRUE, damit die Kontrolle über 
+    // den Pointer nicht dem wxImage-Objekt überlassen wird.
+    image.SetData(model->getModCarrierBytes(), true);
     view->getModStaticBitmap()->SetBitmap(image);
     view->getBitpatternOutput()->SetValue(model->getModBitPattern());
     this->setSaveAllowed(true);

@@ -297,6 +297,24 @@ size_t SMModel::getModCarrierBytesLength() const {
 };
 
 /**
+ * Gibt das Bytemuster des unmodifizierten Bildes zurück
+ * 
+ * @return Bytemuster des unmodiziferten Bildes
+ */
+unsigned char* SMModel::getUnmodCarrierBytes() const {
+    return unmodCarrierBytes;
+};
+
+/**
+ * Gibt die Länge des Bytemusters des unmodifierten Bildes zurück
+ * 
+ * @return Länge des Bytemusters des unmodiziferten Bildes
+ */
+size_t SMModel::getUnmodCarrierBytesLength() const {
+    return unmodCarrierBytesLength;
+};
+
+/**
  * Setzt das Bytemuster des modifizierten Bildes auf das übergeben Bytemuster
  * 
  * @param modBytes Bytemuster, welches auf das Bytemuster des modifizierten Bildes gesetzt wird
@@ -316,24 +334,6 @@ void SMModel::setModCarrierBytes(unsigned char* modBytes, size_t len) {
     for (size_t i = 0; i < len; i++) {
         modCarrierBytes[i] = modBytes[i];
     }
-};
-
-/**
- * Gibt das Bytemuster des unmodifizierten Bildes zurück
- * 
- * @return Bytemuster des unmodiziferten Bildes
- */
-unsigned char* SMModel::getUnmodCarrierBytes() const {
-    return unmodCarrierBytes;
-};
-
-/**
- * Gibt die Länge des Bytemusters des unmodifierten Bildes zurück
- * 
- * @return Länge des Bytemusters des unmodiziferten Bildes
- */
-size_t SMModel::getUnmodCarrierBytesLength() const {
-    return unmodCarrierBytesLength;
 };
 
 /**
@@ -364,8 +364,11 @@ void SMModel::setUnmodCarrierBytes(unsigned char* unmodBytes, size_t len) {
  */
 void SMModel::resetModCarrierBytes() {
     
-    modCarrierBytes = 0;
-    modCarrierBytesLength = 0;
+    if(modCarrierBytes != NULL) {
+        delete [] modCarrierBytes;
+        modCarrierBytes = NULL;
+        modCarrierBytesLength = 0;
+    }
 }
 
 /**
@@ -374,7 +377,10 @@ void SMModel::resetModCarrierBytes() {
  */
 void SMModel::resetUnmodCarrierBytes() {
     
-    unmodCarrierBytes = 0;
-    unmodCarrierBytesLength = 0;
+    if (unmodCarrierBytes != NULL) {
+        delete [] unmodCarrierBytes;
+        unmodCarrierBytes = NULL;
+        unmodCarrierBytesLength = 0;
+    }
 }
 
