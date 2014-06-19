@@ -18,7 +18,7 @@ public:
 private:
     SMView* view;
     SMModel* model;
-    void init();
+    void initGUIElements();
     void initImageHandlers();
     void onOpen(wxCommandEvent& event);
     void onClose(wxCommandEvent& event);

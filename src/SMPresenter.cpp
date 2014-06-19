@@ -55,21 +55,21 @@ bool SMPresenter::OnInit() {
     view->Show(true);
 
     model = new SMModel();
-    this->init();
-    view->setStatusBarText(MSG_WELCOME);
+    this->initGUIElements();
     return true;
 }
 
 /**
  * Definiert den Startzustand des Programms.
  */
-void SMPresenter::init() {
+void SMPresenter::initGUIElements() {
     this->setSaveAllowed(false);
     this->setEncodingAllowed(false);
     this->setDecodingAllowed(false);
     view->getTxtLengthOutput()->SetValue("0");
     view->getMaxTxtLengthOutput()->SetValue("0");
     view->getSecretMsgInput()->SetEditable(false);
+    view->setStatusBarText(MSG_WELCOME);
 }
 
 /**
@@ -87,14 +87,14 @@ void SMPresenter::initImageHandlers() {
 
 /**
  * Öffnet ein FileDialog zum Laden des Bildes.
- * Anhand der event id wird unterschieden welche Aktion 
- * getätigt wurde (welche Komponente wurde getätigt).
+ * Anhand der event-id wird unterschieden, welche Aktion 
+ * getätigt wurde (welcher Button wurde getätigt).
  * 
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onLoad(wxCommandEvent& event) {
     
-    // Zeige ein Dialog um ein Bild zu laden.
+    // Zeige ein Dialog, um ein Bild zu laden.
     wxFileDialog openDialog(view, TXT_LOAD_IMG, wxEmptyString, wxEmptyString, IMG_IN_FORMATS);
     openDialog.SetDirectory(wxGetHomeDir());
     openDialog.CentreOnParent();
@@ -136,7 +136,7 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
             
-            // Es wird ein Bild ohne versteckter Nachricht geladen.
+            // Es wird ein Bild ohne versteckte Nachricht geladen.
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
             
@@ -182,7 +182,7 @@ void SMPresenter::onSave(wxCommandEvent& event) {
             IMG_OUT_FORMATS, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     dialog.SetFilterIndex(1);
     
-    // Falls OK gedruckt wurde, speichere das Bild im gegebenen Pfad.
+    // Falls OK gedrückt wurde, speichere das Bild im gegebenen Pfad.
     if (dialog.ShowModal() == wxID_OK) {
         wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
         modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
@@ -246,10 +246,14 @@ void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
     wxString rawInput = msgInput->GetValue();
     wxString filtered = rawInput;
     wxRegEx reg;
+    
+    // Regex erlaubt nur ASCII Zeichen 0x(0-7F) => 0-127
     if (reg.Compile(wxT("[^\u0000-\u007F]"))) {
-        reg.Replace(&filtered, wxT("?")); // Gemäß der Maske ersetzen.
+        // Setzt ein Fragezeichen, falls Zeichen nicht ASCII Zeichen ist.
+        reg.Replace(&filtered, wxT("?"));
     }
-    // Aktualisiere das Eingabefeld nur wenn die Nachricht gefiltert wurde.
+    // Aktualisiere das Eingabefeld nur wenn die Nachricht gefiltert wurde,
+    // also die Nachricht im Textfeld nicht mehr der aktuellen Nachricht entspricht
     if (rawInput.compare(filtered) != 0) {
         msgInput->SetValue(filtered);
         msgInput->SetInsertionPointEnd();
@@ -258,14 +262,15 @@ void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
     wxTextCtrl* msgLen = view->getTxtLengthOutput();
     int size = msgInput->GetValue().size();
     msgLen->SetValue(std::to_string(size));
-    // Deaktiviere bzw. aktiviere encode und aktualisiere die Statusleiste.
+    
+    // Deaktiviere bzw. aktiviere Encode-Elemente und aktualisiere die Statusleiste.
     int maxLength = getMaxTextLength();
     bool unmodBmpSet = isUnmodBmpSet();
     if (!unmodBmpSet || size == 0 || size > maxLength) {
         this->setEncodingAllowed(false);
         if (unmodBmpSet && size > maxLength) {
             view->setStatusBarErrorText(MSG_TOO_LONG);
-        } else if (!isModBmpSet()) {
+        } else if (unmodBmpSet && !isModBmpSet()) {
             view->setStatusBarText(MSG_WAIT_INPUT);
         }
     } else {
