@@ -39,11 +39,13 @@ private:
     const wxString IMG_OUT_NAME = _T("top_secret.bmp");
     const wxString MSG_WELCOME = _("Welcome to SteganoMonkey!");
     const wxString MSG_COR_IMG = _("Tried to load corrupted image!");
-    const wxString MSG_RDY_ENC = _("Ready to encode!");
-    const wxString MSG_RDY_DEC = _("Ready to decode!");
+    const wxString MSG_RDY_ENC = _("Ready to encode...");
+    const wxString MSG_RDY_DEC = _("Ready to decode...");
+    const wxString MSG_ENC_SUCC = _("Encode successful!");
+    const wxString MSG_DEC_SUCC = _("Decode successful!");
     const wxString MSG_NO_HDN_INF = _("Loaded picture has no hidden message!");
     const wxString MSG_TOO_LONG = _("Your message is too long for the given image!");
-    const wxString MSG_WAIT_INPUT = _("Waiting for message.");
+    const wxString MSG_WAIT_INPUT = _("Waiting for message...");
     const wxString MSG_SAVE_PATH = _("Image containing the secret message saved under: ");
     const wxString TXT_SAVE_IMG = _T("Save Image");
     const wxString TXT_LOAD_IMG = _T("Load Image");

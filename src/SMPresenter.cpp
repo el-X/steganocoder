@@ -215,6 +215,7 @@ void SMPresenter::onEncode(wxCommandEvent& event) {
     view->getModStaticBitmap()->SetBitmap(image);
     view->getBitpatternOutput()->SetValue(model->getModBitPattern());
     this->setSaveAllowed(true);
+    view->setStatusBarText(MSG_ENC_SUCC);
     view->Layout();
 }
 
@@ -232,6 +233,7 @@ void SMPresenter::onDecode(wxCommandEvent& event) {
     
     // Starte den Decodingvorgang und zeige die Nachricht.
     view->getSecretMsgInput()->SetValue(model->decode());
+    view->setStatusBarText(MSG_DEC_SUCC);
 }
 
 /**
