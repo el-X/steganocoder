@@ -56,7 +56,7 @@ bool SMPresenter::OnInit() {
 
     model = new SMModel();
     this->init();
-    view->setStatusBarText(welcomeMsg);
+    view->setStatusBarText(MSG_WELCOME);
     return true;
 }
 
@@ -93,65 +93,77 @@ void SMPresenter::initImageHandlers() {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onLoad(wxCommandEvent& event) {
-    wxFileDialog openDialog(view, _T("Load Image"), wxEmptyString, wxEmptyString,
-            _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico)|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico"));
+    
+    // Zeige ein Dialog um ein Bild zu laden.
+    wxFileDialog openDialog(view, TXT_LOAD_IMG, wxEmptyString, wxEmptyString, IMG_IN_FORMATS);
     openDialog.SetDirectory(wxGetHomeDir());
     openDialog.CentreOnParent();
-
+    
+    // Warte bis der Dialog geschlossen wird. 
+    // Falls OK gedrückt wurde, versuche das Bild zu laden.
     if (openDialog.ShowModal() == wxID_OK) {
         wxImage image = openDialog.GetPath();
+        
+        // Prüfe ob das Bild in Ordnung ist.
         if (!image.IsOk()) {
-            view->setStatusBarErrorText(_("Tried to load corrupted image!"));
+            view->setStatusBarErrorText(MSG_COR_IMG);
             return;
         }
         // Anzahl der Bytes = Hoehe x Breite x RGB
         size_t imageBytesCount = image.GetHeight() * image.GetWidth() * 3;
+        
+        // Prüfen welcher Button betätigt wurde.
         if (event.GetId() == SMView::ID_LOAD_MOD_IMG) {
-            // Es wird versucht ein Bild mit versteckter Nachricht zu laden
+            
+            // Es wird ein Bild mit versteckter Nachricht geladen.
             view->getModStaticBitmap()->SetBitmap(image);
             model->setModCarrierBytes(image.GetData(), (size_t) imageBytesCount);
             view->getBitpatternOutput()->SetValue(model->getModBitPattern());
-            // Prüfen ob das Bild eine verstekcte Nachricht enthält.
+            
+            // Prüfen ob das Bild eine versteckte Nachricht enthält.
             if (model->checkForHeaderSignature()) {
                 this->setDecodingAllowed(true);
-                view->setStatusBarText(_("Ready to decode!"));
+                view->setStatusBarText(MSG_RDY_DEC);
             } else {
                 this->setDecodingAllowed(false);
-                view->setStatusBarErrorText(_("Loaded picture has no hidden message!"));
+                view->setStatusBarErrorText(MSG_NO_HDN_INF);
             }
             view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
             view->getSecretMsgInput()->Clear();
             view->getSecretMsgInput()->SetEditable(false);
             this->setEncodingAllowed(false);
-//            model->setUnmodCarrierBytes(emptyCharArray, 0);
             model->resetUnmodCarrierBytes();
             view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
+            
             // Bild ohne versteckter Nachricht wurde geladen.
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
+            
             // Zeige maximale Länge der Nachricht.
             view->getMaxTxtLengthOutput()->SetValue(to_string(getMaxTextLength()));
+            
             // Interaktive GUI Elemente aktualisieren.
             view->getBitpatternOutput()->Clear();
             view->getSecretMsgInput()->SetEditable(true);
             this->setDecodingAllowed(false);
             this->setSaveAllowed(false);
-//            model->setModCarrierBytes(emptyCharArray, 1);
+            
+            // Setze die Daten und das Bild mit einer Nachricht zurück.
             model->resetModCarrierBytes();
             view->getModStaticBitmap()->SetBitmap(wxBitmap());
-            int secMsgLen = view->getSecretMsgInput()->GetValue().size();
             
             // Im Falle dass schon vorher ein Bild da war..
+            int secMsgLen = view->getSecretMsgInput()->GetValue().size();
             if (secMsgLen > getMaxTextLength()) {
                 this->setEncodingAllowed(false);
-                view->setStatusBarErrorText(_("Your message is too long for the given image!"));
+                view->setStatusBarErrorText(MSG_TOO_LONG);
             } else if (secMsgLen == 0){
                 this->setEncodingAllowed(false);
-                view->setStatusBarText(_("Waiting for message."));
+                view->setStatusBarText(MSG_WAIT_INPUT);
             } else {
                 this->setEncodingAllowed(true);
-                view->setStatusBarText(_("Ready to encode!"));
+                view->setStatusBarText(MSG_RDY_ENC);
             }
         }
         view->Layout();
@@ -164,14 +176,17 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onSave(wxCommandEvent& event) {
-    wxFileDialog dialog(view, _T("Save Image"), wxEmptyString, _T("top_secret.bmp"),
-            _T("Bitmap (*.bmp)|*.bmp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-
+    
+    // Zeige ein Dialog zum Speichern des Bildes.
+    wxFileDialog dialog(view, TXT_SAVE_IMG, wxEmptyString, IMG_OUT_NAME,
+            IMG_OUT_FORMATS, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     dialog.SetFilterIndex(1);
+    
+    // Falls OK gedruckt wurde, speichere das Bild im gegebenen Pfad.
     if (dialog.ShowModal() == wxID_OK) {
         wxBitmap modBitmap = view->getModStaticBitmap()->GetBitmap();
         modBitmap.SaveFile(dialog.GetPath(), wxBITMAP_TYPE_BMP);
-        view->setStatusBarText(_("Image containing the secret message saved under: " + dialog.GetPath()));
+        view->setStatusBarText(_(MSG_SAVE_PATH + dialog.GetPath()));
     }
 }
 
@@ -207,10 +222,14 @@ void SMPresenter::onEncode(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onDecode(wxCommandEvent& event) {
+    
+    // Setze unmodifiziertes Bild zurück (im Falle das eins schon da war).
     view->getUnmodStaticBitmap()->SetBitmap(wxBitmap());
     view->getMaxTxtLengthOutput()->SetValue("0");
-    view->getSecretMsgInput()->SetValue(model->decode());
     this->setEncodingAllowed(false);
+    
+    // Starte den Decodingvorgang und zeige die Nachricht.
+    view->getSecretMsgInput()->SetValue(model->decode());
 }
 
 /**
@@ -228,7 +247,7 @@ void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
     wxString filtered = rawInput;
     wxRegEx reg;
     if (reg.Compile(wxT("[^\u0000-\u007F]"))) {
-        reg.Replace(&filtered, wxT("?")); // gemäß der Maske ersetzen
+        reg.Replace(&filtered, wxT("?")); // Gemäß der Maske ersetzen.
     }
     // Aktualisiere das Eingabefeld nur wenn die Nachricht gefiltert wurde.
     if (rawInput.compare(filtered) != 0) {
@@ -245,13 +264,13 @@ void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
     if (!unmodBmpSet || size == 0 || size > maxLength) {
         this->setEncodingAllowed(false);
         if (unmodBmpSet && size > maxLength) {
-            view->setStatusBarErrorText(_("Your message is too long for the given image!"));
+            view->setStatusBarErrorText(MSG_TOO_LONG);
         } else if (!isModBmpSet()) {
-            view->setStatusBarText(_("Waiting for message."));
+            view->setStatusBarText(MSG_WAIT_INPUT);
         }
     } else {
         this->setEncodingAllowed(true);
-        view->setStatusBarText(_("Ready to encode!"));
+        view->setStatusBarText(MSG_RDY_ENC);
     }
 }
 
@@ -261,6 +280,7 @@ void SMPresenter::onSecretMessageChange(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onExit(wxCommandEvent& event) {
+    
     view->Close(true);
 }
 
@@ -271,6 +291,7 @@ void SMPresenter::onExit(wxCommandEvent& event) {
  * @param event Kommando Event mit der ID.
  */
 void SMPresenter::onAbout(wxCommandEvent& event) {
+    
     view->getAboutDialog()->Centre();
     view->getAboutDialog()->ShowModal();
 }
@@ -282,6 +303,7 @@ void SMPresenter::onAbout(wxCommandEvent& event) {
  * @return unsigned int Maximale Größe der Nachricht.
  */
 int SMPresenter::getMaxTextLength() const {
+    
     unsigned int maxTxtLength = 0;
     // Maximal mögliche Länge anhand der Bilddaten ermitteln.
     if (!view->getUnmodStaticBitmap()->GetBitmap().IsNull()) {
