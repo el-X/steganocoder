@@ -37,7 +37,6 @@ private:
     size_t modCarrierBytesLength = 0;
     unsigned char* unmodCarrierBytes;
     size_t unmodCarrierBytesLength = 0;
-    unsigned char* emptyCharArray = new unsigned char[0];
 };
 
 #endif	/* SMMODEL_H */
