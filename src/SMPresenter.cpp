@@ -136,7 +136,7 @@ void SMPresenter::onLoad(wxCommandEvent& event) {
             view->getMaxTxtLengthOutput()->SetValue("0");
         } else {
             
-            // Bild ohne versteckter Nachricht wurde geladen.
+            // Es wird ein Bild ohne versteckter Nachricht geladen.
             view->getUnmodStaticBitmap()->SetBitmap(image);
             model->setUnmodCarrierBytes(image.GetData(), imageBytesCount);
             
