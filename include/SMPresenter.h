@@ -20,8 +20,6 @@ private:
     SMModel* model;
     void init();
     void initImageHandlers();
-    void onOpen(wxCommandEvent& event);
-    void onClose(wxCommandEvent& event);
     void onLoad(wxCommandEvent& event);
     void onSave(wxCommandEvent& event);
     void onEncode(wxCommandEvent& event);
