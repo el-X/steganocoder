@@ -33,8 +33,10 @@ void SMAboutDialog::create() {
     copyleftLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_COPYLEFT, wxDefaultPosition, wxDefaultSize, 0);
     clipartLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_CLIPART_BY, wxDefaultPosition, wxDefaultSize, 0);
     clipartLink = new wxHyperlinkCtrl(mainPanel, wxID_ANY, TEXT_CLIPART, LINK_CLIPART);
+    clipartLink->SetToolTip(LINK_CLIPART);
     iconLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_ICON_BY, wxDefaultPosition, wxDefaultSize, 0);
     iconLink = new wxHyperlinkCtrl(mainPanel, wxID_ANY, TEXT_ICON, LINK_ICON);
+    iconLink->SetToolTip(LINK_ICON);
 }
 
 /**

@@ -184,10 +184,11 @@ void SMView::createUpperRightBox() {
 }
 
 /**
- * Das Bitmuster des modifizierten Bilds wird hier erzeugt.
+ * Das Bitmuster des modifizierten Bildes wird hier erzeugt.
  */
 void SMView::createLowerRightBox() {
-    bitPatternOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY);
+    bitPatternOutput = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    bitPatternOutput->SetEditable(false);
 }
 
 /**

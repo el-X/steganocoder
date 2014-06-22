@@ -18,14 +18,14 @@
 using namespace std;
 
 /**
- * Modifiziert die Bytes für das enkodierte Bild so, dass in den letzten Bits 
- * eines jeden Bytes des Bildes die übergebene Nachricht gespeichert wird.
+ * Modifiziert die Bytes für das enkodierte Bild dermaßen, dass im letzten Bit
+ * (LSB) eines jeden Bytes des Bildes die übergebene Nachricht gespeichert wird.
  * 
  * @param msg In das Bild einzufügende Nachricht
  */
 void SMModel::encode(const string& msg) {
 
-    // Nachrichtenspezifischen Header und Nachricht in encoded_msg speichern
+    // Nachrichtenspezifischen Header und Nachricht in encodedMsg speichern
     string encodedMsg(createHeader(msg) + msg);
     // Länge der gesamten Nachricht (inkl. Header) speichern
     unsigned int encodedMsgSize = encodedMsg.size();
@@ -55,7 +55,7 @@ void SMModel::encode(const string& msg) {
     resetModCarrierBytes();
     
     // Reservieren von neuem Speicherplatz für das modizifierte Bild
-    // in der Größe des unmodifizierten Bildes und ebenfalls Übernehmen der Länge
+    // in der Größe des unmodifizierten Bildes und Übernahme der Länge
     modCarrierBytes = new unsigned char[unmodCarrierBytesLength];
     modCarrierBytesLength = unmodCarrierBytesLength;
 
@@ -80,17 +80,6 @@ void SMModel::encode(const string& msg) {
 }
 
 /**
- * Methode zum Ermitteln der Länge des Headers.
- * 
- * @return Länge des Headers
- */
-unsigned int SMModel::getHeaderSize() {
-    // Headerlänge setzt sich zusammen aus der Signaturlänge
-    // und 4 Bytes für das Speichern der Nachrichtenlänge
-    return (SGN.size() + 4);
-}
-
-/**
  * Holt eine versteckte Nachricht, welche in der Bitrepräsentation des
  * modizifierten Bildes vorhanden ist.
  * 
@@ -106,7 +95,7 @@ string SMModel::decode() {
     size_t msgSizeOffset = SGN.size() * 8;
 
     // Die vier Bytes der Länge rauslesen
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < maxMsgHeaderLen; i++) {
         // Pro Byte wiederum jedes Bit raussuchen
         for (size_t j = 0; j < 8; j++) {
             // Die einzelnen Bits des ersten Bytes speichern,
@@ -127,11 +116,11 @@ string SMModel::decode() {
     // Da die Nachricht erst nach dem Header anfängt, ist das erste Bit, welches
     // zur Nachricht gehört direkt nach dem Header. Deshalb ist der Offset,
     // nachdem die Nachricht anfängt Headergröße * 8.
-    size_t headerOffset = getHeaderSize()*8;
+    size_t headerOffset = this->headerSize * 8;
 
     // Die Nachricht aus dem kodierten Bild holen
-    // Beginn der Schleife nach dem Ende des Headers, Ende nach dem Ende der
-    // aus dem Bild geholten Nachrichtenlänge
+    // Beginn der Schleife nach dem Ende des Headers 
+    // Ende der Nachricht nach dem Ende der aus dem Bild geholten Nachrichtenlänge
     for (size_t i = headerOffset; i < headerOffset + msgSize * 8; i++) {
         // Das letzte Bit des i-ten Bytes des modifzierten Bildes für die
         // Bitrepräsentation speichern
@@ -167,15 +156,26 @@ string SMModel::decode() {
 }
 
 /**
- * Prüft ob das modifizierte Bild eine Header Signature enthält und damit eine 
- * Nachricht.
+ * Gibt die Länge des Headers zurück.
  * 
- * @return true, wenn Signatur gefunden, false wenn nicht
+ * @return Länge des Headers
+ */
+unsigned int SMModel::getHeaderSize() {
+    // Headerlänge setzt sich zusammen aus der Signaturlänge "SGN"
+    // und 4 Bytes für das Speichern der Nachrichtenlänge "maxMsgLen"
+    return this->headerSize;
+}
+
+/**
+ * Prüft, ob das modifizierte Bild eine Header-Signatur und somit auch eine 
+ * Nachricht enthält.
+ * 
+ * @return true, wenn Signatur gefunden; sonst false
  */
 bool SMModel::checkForHeaderSignature() const {
 
-    // Prüfe Übereinstimmung mit einzelnen Signatur Zeichen 
-    // mit den ersten Zeichen der Bitmap
+    // Prüfe, ob die Signatur-Zeichen in den ersten Zeichen der Bitmap enthalten
+    // sind
     for (size_t i = 0; i < SGN.length(); i++) {
 
         // String zur Zwischenspeicherung der Bitrepräsentation eines Bytes im Bild
@@ -209,7 +209,7 @@ string SMModel::getModBitPattern() {
     // diese dem Ergebnisstring hinzu.
     // (Derzeit begrenzt auf 1000 Zeichen, da sonst Berechnungsdauer 
     // bei großem Bild sehr lang)
-    for (size_t i = 0; i < 1000 && i < modCarrierBytesLength; i++) {
+    for (size_t i = 0; i < bitpatternLength && i < modCarrierBytesLength; i++) {
         result += charToBits(modCarrierBytes[i]) + " ";
     }
     return result;
@@ -218,8 +218,8 @@ string SMModel::getModBitPattern() {
 /**
  * Erstellt einen Header für eine Nachricht.
  * 
- * @param msg Nachricht für den ein Header erstellt werden soll
- * @return Den erstellten Header für die Nachricht
+ * @param msg Nachricht, für die ein Header erstellt werden soll
+ * @return Der erstellte Header für die Nachricht
  */
 string SMModel::createHeader(const string& msg) {
 
@@ -231,16 +231,17 @@ string SMModel::createHeader(const string& msg) {
     // Das 32-Bit Muster als String zur weiteren Verwendung speichern
     string strBits = bits.to_string();
 
-    // Länge der Nachricht in den Header speichern (4 Byte lang)
-    for (size_t i = 0; i < 4; i++) {
-        // ASCII-Wert der jeweiligen 8 Bits dem Header hinzufügen
+    // Länge der Nachricht in den Header speichern 
+    for (size_t i = 0; i < maxMsgHeaderLen; i++) {
+        // 8 Bits ab der (i * 8)-ten Stelle einlesen, in ein char umwandeln
+        // und dem Header hinzufügen
         header += bitsToChar(strBits.substr(i * 8, 8));
     }
     return header;
 }
 
 /**
- * Gibt eine Bitrepräsentation des ASCII Wertes eines Zeichens als String 
+ * Gibt eine Bitrepräsentation des ASCII-Wertes eines Zeichens als String 
  * zurück. Etwa: 'A' entspricht "01000001"
  *  
  * @param c Zeichen, dessen Bitrepräsentation erstellt werden soll
@@ -250,7 +251,7 @@ string SMModel::charToBits(const unsigned char& c) const {
     string bits("");
     for (int i = 7; i >= 0; i--) {
         // Einzelne Bits des Zeichens von rechts in die Bitrepräsentation speichern,
-        // da append am Ende des Strings etwa anfügt (deshalb von 7->0 und nicht 0->7)
+        // da append am Ende des Strings etwas anfügt (deshalb von 7->0 und nicht 0->7)
         bits.append((c & (1 << i)) ? "1" : "0");
     }
     return bits;
@@ -264,7 +265,7 @@ string SMModel::charToBits(const unsigned char& c) const {
  * @return Das Zeichen, welches der Bitrepräsentation entspricht
  */
 unsigned char SMModel::bitsToChar(const string& bits) const {
-    // Prüfen, ob das Bitmuster 8 Bits lang ist (1 Byte = 1 Zeichen)
+    // Prüfen, ob das Bitmuster 8 Bit lang ist (1 Byte = 1 Zeichen)
     assert(bits.size() == 8);
 
     // Die Bitrepräsentation des Zeichens als 8-Bit bitset speichern
@@ -273,7 +274,7 @@ unsigned char SMModel::bitsToChar(const string& bits) const {
     // Die Bitrepräsentation als Dezimalzahl speichern
     unsigned int asciiPos = bitsArray.to_ulong();
 
-    // Den ASCII Dezimalwert zu dem Zeichen casten und zurückgeben
+    // Den ASCII Dezimalwert zu einem Zeichen umwandeln und zurückgeben
     return static_cast<unsigned char> (asciiPos);
 };
 

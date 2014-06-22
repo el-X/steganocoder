@@ -33,9 +33,12 @@ private:
     unsigned char bitsToChar(const std::string& bits) const;
     std::string createHeader(const std::string& msg);
     const std::string SGN = "SGN";
-    unsigned char* modCarrierBytes;
+    const int maxMsgHeaderLen = 4;
+    const int headerSize = SGN.size() + maxMsgHeaderLen;  // Länge des Headers
+    const int bitpatternLength = 1000;  // zur Anzeige des Bitpatterns
+    unsigned char* modCarrierBytes = NULL;
     size_t modCarrierBytesLength = 0;
-    unsigned char* unmodCarrierBytes;
+    unsigned char* unmodCarrierBytes = NULL;
     size_t unmodCarrierBytesLength = 0;
 };
 
