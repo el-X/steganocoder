@@ -35,7 +35,7 @@ private:
     const std::string SGN = "SGN";
     const int maxMsgHeaderLen = 4;
     const int headerSize = SGN.size() + maxMsgHeaderLen;  // Länge des Headers
-    const int bitpatternLength = 1000;  // zur Anzeige des Bitpatterns
+    const int maxBitpatternLength = 1000;  // zur Anzeige des Bitpatterns
     unsigned char* modCarrierBytes = NULL;
     size_t modCarrierBytesLength = 0;
     unsigned char* unmodCarrierBytes = NULL;

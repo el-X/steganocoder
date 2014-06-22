@@ -209,7 +209,7 @@ string SMModel::getModBitPattern() {
     // diese dem Ergebnisstring hinzu.
     // (Derzeit begrenzt auf 1000 Zeichen, da sonst Berechnungsdauer 
     // bei großem Bild sehr lang)
-    for (size_t i = 0; i < bitpatternLength && i < modCarrierBytesLength; i++) {
+    for (size_t i = 0; i < maxBitpatternLength && i < modCarrierBytesLength; i++) {
         result += charToBits(modCarrierBytes[i]) + " ";
     }
     return result;
