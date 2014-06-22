@@ -20,8 +20,6 @@ private:
     SMModel* model;
     void initGUIElements();
     void initImageHandlers();
-    void onOpen(wxCommandEvent& event);
-    void onClose(wxCommandEvent& event);
     void onLoad(wxCommandEvent& event);
     void onSave(wxCommandEvent& event);
     void onEncode(wxCommandEvent& event);
@@ -36,19 +34,21 @@ private:
     bool isUnmodBmpSet();
     bool isModBmpSet();
     wxDECLARE_EVENT_TABLE();
-    const wxString IMG_IN_FORMATS = _T("Image (*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico)|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tga;*.ico");
-    const wxString IMG_OUT_FORMATS = _T("Bitmap (*.bmp)|*.bmp");
-    const wxString IMG_OUT_NAME = _T("top_secret.bmp");
+    const wxString IMG_IN_FORMATS = _("Image (*.bmp;*.jpg;*.jpeg;*.png;*.tga;*.ico)|*.bmp;*.jpg;*.jpeg;*.png;*.tga;*.ico");
+    const wxString IMG_OUT_FORMATS = _("Bitmap (*.bmp)|*.bmp");
+    const wxString IMG_OUT_NAME = _("top_secret.bmp");
     const wxString MSG_WELCOME = _("Welcome to SteganoMonkey!");
-    const wxString MSG_COR_IMG = _("Tried to load corrupted image!");
-    const wxString MSG_RDY_ENC = _("Ready to encode!");
-    const wxString MSG_RDY_DEC = _("Ready to decode!");
-    const wxString MSG_NO_HDN_INF = _("Loaded picture has no hidden message!");
-    const wxString MSG_TOO_LONG = _("Your message is too long for the given image!");
-    const wxString MSG_WAIT_INPUT = _("Waiting for message.");
-    const wxString MSG_SAVE_PATH = _("Image containing the secret message saved under: ");
-    const wxString TXT_SAVE_IMG = _T("Save Image");
-    const wxString TXT_LOAD_IMG = _T("Load Image");
+    const wxString MSG_COR_IMG = _("Loaded image is corrupt!");
+    const wxString MSG_RDY_ENC = _("Ready to encode...");
+    const wxString MSG_RDY_DEC = _("Ready to decode...");
+    const wxString MSG_ENC_SUCC = _("Encode successful!");
+    const wxString MSG_DEC_SUCC = _("Decode successful!");
+    const wxString MSG_NO_HDN_INF = _("Loaded picture contains no hidden message!");
+    const wxString MSG_TOO_LONG = _("The provided message is too long for the given image!");
+    const wxString MSG_WAIT_INPUT = _("Waiting for message input...");
+    const wxString MSG_SAVE_PATH = _("Encoded image saved under: ");
+    const wxString TXT_SAVE_IMG = _("Save Image");
+    const wxString TXT_LOAD_IMG = _("Load Image");
 };
 
 DECLARE_APP(SMPresenter)

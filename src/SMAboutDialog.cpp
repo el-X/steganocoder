@@ -10,7 +10,7 @@
 SMAboutDialog::SMAboutDialog(wxWindow* parent, wxWindowID id,
         const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxDialog(parent, id, title, pos, size) {
-    this->SetTitle(_(TEXT_TITLE));
+    this->SetTitle(TEXT_TITLE);
     this->create();
     this->doLayout();
 }
@@ -24,17 +24,19 @@ void SMAboutDialog::create() {
     appImage = new wxStaticBitmap(mainPanel, wxID_ANY, wxBITMAP_PNG(monkey_about), wxDefaultPosition, wxDefaultSize, 0);
     appImage->SetFocus();
     separator = new wxStaticLine(mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-    developerHeadingLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_DEVELOPER_HEADING), wxDefaultPosition, wxDefaultSize, 0);
+    developerHeadingLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_DEVELOPER_HEADING, wxDefaultPosition, wxDefaultSize, 0);
     developerHeadingLabel->SetFont(FONT_BOLD);
-    developerLabel1 = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_DEVELOPER1), wxDefaultPosition, wxDefaultSize, 0);
-    developerLabel2 = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_DEVELOPER2), wxDefaultPosition, wxDefaultSize, 0);
+    developerLabel1 = new wxStaticText(mainPanel, wxID_ANY, TEXT_DEVELOPER1, wxDefaultPosition, wxDefaultSize, 0);
+    developerLabel2 = new wxStaticText(mainPanel, wxID_ANY, TEXT_DEVELOPER2, wxDefaultPosition, wxDefaultSize, 0);
     copyleftImage = new wxStaticBitmap(mainPanel, wxID_ANY, wxBITMAP_PNG(copyleft15x15), wxDefaultPosition, wxDefaultSize, 0);
-    copyleftImage->SetToolTip(_(TOOLTIP_COPYLEFT));
-    copyleftLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_COPYLEFT), wxDefaultPosition, wxDefaultSize, 0);
-    clipartLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_CLIPART_BY), wxDefaultPosition, wxDefaultSize, 0);
-    clipartLink = new wxHyperlinkCtrl(mainPanel, wxID_ANY, _(TEXT_CLIPART), _(LINK_CLIPART));
-    iconLabel = new wxStaticText(mainPanel, wxID_ANY, _(TEXT_ICON_BY), wxDefaultPosition, wxDefaultSize, 0);
-    iconLink = new wxHyperlinkCtrl(mainPanel, wxID_ANY, _(TEXT_ICON), _(LINK_ICON));
+    copyleftImage->SetToolTip(TOOLTIP_COPYLEFT);
+    copyleftLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_COPYLEFT, wxDefaultPosition, wxDefaultSize, 0);
+    clipartLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_CLIPART_BY, wxDefaultPosition, wxDefaultSize, 0);
+    clipartLink = new wxHyperlinkCtrl(mainPanel, wxID_ANY, TEXT_CLIPART, LINK_CLIPART);
+    clipartLink->SetToolTip(LINK_CLIPART);
+    iconLabel = new wxStaticText(mainPanel, wxID_ANY, TEXT_ICON_BY, wxDefaultPosition, wxDefaultSize, 0);
+    iconLink = new wxHyperlinkCtrl(mainPanel, wxID_ANY, TEXT_ICON, LINK_ICON);
+    iconLink->SetToolTip(LINK_ICON);
 }
 
 /**

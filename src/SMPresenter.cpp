@@ -79,9 +79,7 @@ void SMPresenter::initImageHandlers() {
     wxImage::AddHandler(new wxBMPHandler);
     wxImage::AddHandler(new wxPNGHandler);
     wxImage::AddHandler(new wxJPEGHandler);
-    wxImage::AddHandler(new wxGIFHandler);
     wxImage::AddHandler(new wxICOHandler);
-    wxImage::AddHandler(new wxTIFFHandler());
     wxImage::AddHandler(new wxTGAHandler());
 }
 
@@ -209,10 +207,13 @@ void SMPresenter::onEncode(wxCommandEvent& event) {
     model->encode(message.ToStdString());
     
     // Modifizierte Bilddaten setzen und anzeigen.
-    image.SetData(model->getModCarrierBytes());
+    // Zweiter Parameter auf TRUE, damit die Kontrolle über 
+    // den Pointer nicht dem wxImage-Objekt überlassen wird.
+    image.SetData(model->getModCarrierBytes(), true);
     view->getModStaticBitmap()->SetBitmap(image);
     view->getBitpatternOutput()->SetValue(model->getModBitPattern());
     this->setSaveAllowed(true);
+    view->setStatusBarText(MSG_ENC_SUCC);
     view->Layout();
 }
 
@@ -230,6 +231,7 @@ void SMPresenter::onDecode(wxCommandEvent& event) {
     
     // Starte den Decodingvorgang und zeige die Nachricht.
     view->getSecretMsgInput()->SetValue(model->decode());
+    view->setStatusBarText(MSG_DEC_SUCC);
 }
 
 /**
